@@ -11,5 +11,6 @@
     "dev": "concurrently \"npm run dev-server\" \"npm run client\""
   },
   "author": "Alex(Jose) Nunez",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {}
 }

@@ -1,5 +1,3 @@
-// ----- node packages ----- 
-
 // fast and lightweight web framework for Node.js. Easier to write NodeJS code with it
 const express = require('express');
 
@@ -22,13 +20,28 @@ const bodyParser = require('body-parser');
 // Instead of setting environment variables on our development machine, they can be stored in a file
 const dotenv = require('dotenv').config();
 
-// --------------------
-
 // calls express() function and stores returning object into app
-const app = express(); 
+const app = express();
 
+
+// ------- Routes -----------
+const userRoutes = require('./routes/userRoutes');
+const contactRoutes = require('./routes/contactRoutes');
+
+// API route modules 
+app.use('/users', userRoutes);
+// app.use('/contacts', contactRoutes);
+
+// catch all 
+// app.use('*', (req, res) => {res.json("catch all works")})
+
+
+// ------ Node modules ------
 app.use(cors()); // (Enable All CORS Requests)
 app.use(bodyParser.json()); // makes bodyParser able to parse json data from incoming requests 
+
+
+
 
 // ----- database connection -----
 const uri = process.env.ATLAS_URI;
@@ -39,11 +52,6 @@ const connection = mongoose.connection;
 connection.once('open', () => {
     console.log('MongoDB database connection established successfully');
 })
-
-
-// ----- routes ----- 
-
-
 
 
 

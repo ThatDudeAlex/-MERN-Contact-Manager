@@ -1,19 +1,16 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.schema;
+const Schema = mongoose.Schema;
 
 // create Schema
 const userSchema = new Schema({
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
         require: true
-    },
-    date: {
-        type: Date, 
-        default: Date.now
     }
 });
 
