@@ -1,13 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt"); // A library to help you hash passwords
+const bcrypt = require("bcryptjs"); // library to help you hash passwords
+const jwt = require('jsonwebtoken') // simplifies use of json web tokens 
 
 // schema model
 let User = require("../models/User");
 
 router.use(express.json());
-
-// router.get("/test", (req, res) => res.json({ msg: "User works" }));
 
 router.get("/", (req, res) => {
   User.find()
@@ -58,5 +57,46 @@ router.post("/register", (req, res) => {
     res.json(err);
   }
 });
+
+
+/**
+ * @route	POST  users/login
+ * @desc	logs in a user 
+ * @access	public
+ */
+router.post('/login', (req, res) => {
+    try {
+        const email = req.body.email
+        const password = req.body.password
+
+        // finds user by email in the DB
+        User.findOne({ email })
+        .then(user => {
+            if(!user)
+                res.json('Invalid Email or Password')
+
+            // compares the password typed in with the password in DB
+            bcrypt.compare(password, user.password)
+            .then(isMath =>{
+                if(!isMath)
+                    res.json('Invalid Email or Password')
+
+                // user found, prepare create jwt payload 
+                const payload = {userId: user._id, email: user.email, password: user.password}
+
+                // sign token 
+                jwt.sign(payload, 'secret', {expiresIn: '1h'}, (err, token) =>{
+                    res.json({
+                        success: true,
+                        payload: payload,
+                        token: 'Bearer ' + token
+                    })
+                })
+            })
+        }) 
+    } catch (error) {
+        res.json(error)
+    }
+})
 
 module.exports = router;

@@ -30,7 +30,7 @@ const contactRoutes = require('./routes/contactRoutes');
 
 // API route modules 
 app.use('/users', userRoutes);
-// app.use('/contacts', contactRoutes);
+app.use('/contacts', contactRoutes);
 
 // catch all 
 // app.use('*', (req, res) => {res.json("catch all works")})
