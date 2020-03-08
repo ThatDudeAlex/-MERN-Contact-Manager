@@ -6,12 +6,30 @@ const jwt = require('jsonwebtoken') // simplifies use of json web tokens
 // schema model
 let User = require("../models/User");
 
+// allowes router to parse json data
 router.use(express.json());
 
+// error messages for user routes
+const errMessages = {
+  emailTaken: 'A user with this email already exist',
+  invalidCred: 'Invalid Email or Password'
+}
+
+
+/**
+ * @route	GET  /users
+ * @desc	gets all users
+ * @access	private
+ */
 router.get("/", (req, res) => {
-  User.find()
+  try {
+    User.find()
     .then(users => res.json(users))
-    .catch(err => res.json(err));
+    .catch(err => res.json(err))
+  
+  } catch (err) {
+    res.json(err)
+  }
 });
 
 /**
@@ -26,9 +44,10 @@ router.post("/register", (req, res) => {
     User.findOne({email: req.body.email})
     .then(user => {
         if(user)
-            res.status(400).json('A user with this email already exist')
+            res.status(400).json(errMessages.emailTaken)
     })
 
+    // create a new user object
     const newUser = new User({
       email: req.body.email,
       password: req.body.password
@@ -45,11 +64,10 @@ router.post("/register", (req, res) => {
 
         newUser.password = hash;
 
-        newUser
-          .save() // saves user to DB
+        newUser.save() // saves user to DB
           .then(() => res.json({ msg: "New User registered", success: true }))
           .catch(err => {
-            res.status(400).json("unknown error while registering user");
+            res.status(400).json(err);
           });
       });
     });
@@ -73,13 +91,13 @@ router.post('/login', (req, res) => {
         User.findOne({ email })
         .then(user => {
             if(!user)
-                res.json('Invalid Email or Password')
+                res.json(errMessages.invalidCred)
 
             // compares the password typed in with the password in DB
             bcrypt.compare(password, user.password)
             .then(isMath =>{
                 if(!isMath)
-                    res.json('Invalid Email or Password')
+                    res.json(errMessages.invalidCred)
 
                 // user found, prepare create jwt payload 
                 const payload = {userId: user._id, email: user.email, password: user.password}
@@ -99,4 +117,5 @@ router.post('/login', (req, res) => {
     }
 })
 
+// export router, making user api's available for use
 module.exports = router;

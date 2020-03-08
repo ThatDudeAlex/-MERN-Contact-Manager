@@ -33,14 +33,12 @@ app.use('/users', userRoutes);
 app.use('/contacts', contactRoutes);
 
 // catch all 
-// app.use('*', (req, res) => {res.json("catch all works")})
+app.use('*', (req, res) => {res.json("catch all works, under development")})
 
 
 // ------ Node modules ------
 app.use(cors()); // (Enable All CORS Requests)
 app.use(bodyParser.json()); // makes bodyParser able to parse json data from incoming requests 
-
-
 
 
 // ----- database connection -----
@@ -52,10 +50,6 @@ const connection = mongoose.connection;
 connection.once('open', () => {
     console.log('MongoDB database connection established successfully');
 })
-
-
-
-
 
 
 // sets port to the enviroment value or port 5000 if unavailable

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// create contact schema
 const contactSchema = new Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -24,5 +25,6 @@ const contactSchema = new Schema({
    }
 });
 
+// export contact schema
 let Contact = mongoose.model('contacts', contactSchema);
 module.exports = Contact;
