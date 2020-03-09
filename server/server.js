@@ -23,6 +23,10 @@ const dotenv = require('dotenv').config();
 // calls express() function and stores returning object into app
 const app = express();
 
+// ------ Node modules ------
+app.use(cors()); // (Enable All CORS Requests)
+app.use(bodyParser.json()); // makes bodyParser able to parse json data from incoming requests 
+
 
 // ------- Routes -----------
 const userRoutes = require('./routes/userRoutes');
@@ -34,11 +38,6 @@ app.use('/contacts', contactRoutes);
 
 // catch all 
 app.use('*', (req, res) => {res.json("catch all works, under development")})
-
-
-// ------ Node modules ------
-app.use(cors()); // (Enable All CORS Requests)
-app.use(bodyParser.json()); // makes bodyParser able to parse json data from incoming requests 
 
 
 // ----- database connection -----

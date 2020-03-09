@@ -53,7 +53,7 @@ router.post("/register", (req, res) => {
       password: req.body.password
     });
     const saltRounds = 10;
-
+    console.log(newUser)
     // generates password salt
     bcrypt.genSalt(saltRounds, (err, salt) => {
       if (err) throw err;
