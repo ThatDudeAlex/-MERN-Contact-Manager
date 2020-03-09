@@ -13,10 +13,10 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { NavLink, withRouter } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 // user api connection
-import {createNewUser} from '../apis/userApiCalls'
+// import { createNewUser } from "../apis/userApiCalls";
 
 function Copyright() {
   return (
@@ -33,26 +33,29 @@ function Copyright() {
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(3),
     display: "flex",
     flexDirection: "column",
     alignItems: "center"
   },
   avatar: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(4,1,1,1),
     backgroundColor: theme.palette.secondary.main
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(1)
   },
   submit: {
     margin: theme.spacing(3, 0, 2)
   }
 }));
 
-export default function SignUp() {
+export default function SignUp(props) {
   const classes = useStyles();
+  const {toggle} = props
+  
+  console.log(props)
 
   const [formValues, setFormValues] = useState({
     firstName: "",
@@ -62,42 +65,29 @@ export default function SignUp() {
   });
 
   const onChange = e => {
-      const {name, value} = e.target
-      setFormValues({...formValues, [name]:value})
-  }
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  };
 
   const onSubmit = e => {
-    e.preventDefault()
-    
-    const {email, password} = formValues
-    const newUser = {email, password}
+    e.preventDefault();
 
-    console.log(newUser)
-    axios.post('http://localhost:5000/users/register', newUser)
-    .then(res => alert('new user added'));
-    // fetch('http://localhost:5000/users/register', {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify({
-    //         email: email,
-    //         password: password
-    //     })
-    // })
-    // .then(res => res.json())
-    // .then(res => {
-    //     if(res.success)
-    //         console.log('added')
-    // })
-    // .catch(err => console.log(err))
-    // createNewUser(email, password)    
-};
+    const { email, password } = formValues;
+    const newUser = { email, password };
+
+    axios
+      .post("http://localhost:5000/users/register", newUser)
+      .then(res => alert("new user added"));
+  };
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
+      <Typography component="h1" variant="h4">
+          Contact Manager
+      </Typography>
+
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -168,14 +158,14 @@ export default function SignUp() {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <NavLink exact to="/" variant="body2">
+              <Link href="#" variant="body2" onClick={toggle}>
                 Already have an account? Sign in
-              </NavLink>
+              </Link>
             </Grid>
           </Grid>
         </form>
       </div>
-      <Box mt={5}>
+      <Box mt={8}>
         <Copyright />
       </Box>
     </Container>
