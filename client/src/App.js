@@ -1,15 +1,13 @@
 import React from 'react';
 import {BrowserRouter, Route} from 'react-router-dom';
-import SignIn from './components/home/SignIn';
-import SignUp from './components/home/SignUp';
+import Dashboard from './components/dashboard/Album';
 import Home from './pages/Home';
-import './css/App.css';
 
 function App() {
   return (
     <BrowserRouter>
       <Route exact path = '/' component={Home} />
-      <Route exact path = '/signup' component={SignUp} />
+      <Route path = '/dashboard' component={Dashboard} />
     </BrowserRouter>
   );
 }

@@ -12,7 +12,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { NavLink, BrowserRouter } from "react-router-dom";
+import { NavLink, BrowserRouter, Redirect } from "react-router-dom";
 import axios from "axios";
 
 function Copyright() {
@@ -69,9 +69,23 @@ export default function SignIn(props) {
     const newUser = { email, password };
 
     axios
-      .post("http://localhost:5000/users/login", newUser)
-      .then(res => alert(res.data.payload));
+      .post("http://localhost:5000/api/users/login", newUser)
+      .then(res =>{
+          console.log(res)
+      })
+      // .then(json => {
+      //   if(json.data.success)
+      //     login()
+      // })
+      .catch(err => alert(err))
   };
+
+  const login = () => {
+    console.log('hi')
+    return(
+      <Redirect to = '/dashboard' />
+    )
+  }
 
     return (
       <Container component="main" maxWidth="xs">

@@ -26,15 +26,15 @@ const app = express();
 // ------ Node modules ------
 app.use(cors()); // (Enable All CORS Requests)
 app.use(bodyParser.json()); // makes bodyParser able to parse json data from incoming requests 
-
+app.use(bodyParser.urlencoded({extended: false})) // able to parse params data from incoming requests 
 
 // ------- Routes -----------
 const userRoutes = require('./routes/userRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 
 // API route modules 
-app.use('/users', userRoutes);
-app.use('/contacts', contactRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/contacts', contactRoutes);
 
 // catch all 
 app.use('*', (req, res) => {res.json("catch all works, under development")})
