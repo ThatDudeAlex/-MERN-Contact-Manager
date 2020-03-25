@@ -1,32 +1,43 @@
 // fast and lightweight web framework for Node.js. Easier to write NodeJS code with it
-const express = require('express');
-
-// makes interacting with MongoDB through Node.js simpler. provides a straight-forward, 
-// schema-based solution to model your application data
-const mongoose = require('mongoose');
-
 // Cross-origin resource sharing (CORS) allows AJAX requests to skip the 
 // Same-origin policy and access resources from remote hosts
-const cors = require('cors');
-
-// authentication middleware for Node. Its single purpose is: authenticate requests
-const passport = require('passport');
-
 // Parse incoming request bodies in a middleware before your handlers, 
 // available under the req.body property.
-const bodyParser = require('body-parser');
-
 // loads environment variables from a .env file into process.env. This makes development simpler. 
 // Instead of setting environment variables on our development machine, they can be stored in a file
+
+const express = require('express');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+const cors = require('cors');
+const bodyParser = require('body-parser');
 const dotenv = require('dotenv').config();
 
 // calls express() function and stores returning object into app
 const app = express();
+const db = require('./database/createDB') // stores database connection into db
 
-// ------ Node modules ------
-app.use(cors()); // (Enable All CORS Requests)
+// sets session for tracking user login
+app.use(session({
+  secret: process.env.sessionSecret,
+  resave: true,
+  saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: db})
+}))
+
+// configs cors to allow * domains.. NOT SECURE FOR PRODUCTION!, use only while in development 
+// in localhost 
+app.use(cors({
+  origin: function(origin, callback){
+    return callback(null, true);
+  },
+  optionsSuccessStatus: 200,
+  credentials: true
+}));
+
 app.use(bodyParser.json()); // makes bodyParser able to parse json data from incoming requests 
 app.use(bodyParser.urlencoded({extended: false})) // able to parse params data from incoming requests 
+
 
 // ------- Routes -----------
 const userRoutes = require('./routes/userRoutes');
@@ -38,17 +49,6 @@ app.use('/api/contacts', contactRoutes);
 
 // catch all 
 app.use('*', (req, res) => {res.json("catch all works, under development")})
-
-
-// ----- database connection -----
-const uri = process.env.ATLAS_URI;
-
-mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true});
-
-const connection = mongoose.connection;
-connection.once('open', () => {
-    console.log('MongoDB database connection established successfully');
-})
 
 
 // sets port to the enviroment value or port 5000 if unavailable

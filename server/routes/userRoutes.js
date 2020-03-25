@@ -1,36 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs"); // library to help you hash passwords
-const jwt = require('jsonwebtoken') // simplifies use of json web tokens 
-
-// schema model
-let User = require("../models/User");
 
 // allowes router to parse json data
 router.use(express.json());
 
-// error messages for user routes
-const errMessages = {
-  emailTaken: 'A user with this email already exist',
-  invalidCred: 'Invalid Email or Password'
-}
-
+// schema model
+const User = require("../database/models/User");
 
 /**
  * @route	GET  /users
  * @desc	gets all users
  * @access	private
  */
-router.get("/", async(req, res) => {
-  try {
-    // gets all users from the DB
-    const users = await User.find()
+// router.get("/", async(req, res) => {
+//   try {
+//     // gets all users from the DB
+//     // const users = await User.find()
     
-    return res.json(users)
-  } catch (err) {
-    res.json(err)
-  }
-});
+//     return res.json(users)
+//   } catch (err) {
+//     res.json(err)
+//   }
+// });
 
 /**
  * @route	POST  users/register
@@ -56,6 +47,9 @@ router.post("/register", async(req, res) => {
 
     // saves user to DB
     newUser.save()
+
+    // stores userId into session and sets cookie in brower
+    // req.session.userId = user._id
     return res.json('New User Added')
 
   } catch (err) {
@@ -86,13 +80,40 @@ router.post('/login', async(req, res) => {
     const correctPassword = user.validPassword(password, user.password)
     if(!correctPassword) return res.json('invalid password')
 
-    // creates the payload to return to the browser
-    const payload = {userId: user._id, email: user.email, password: user.password}
-    return res.json(payload)
+    // stores userId into session and sets cookie in brower
+    req.session.userId = user._id
+    req.session.cookie.maxAge = 60 * 60 * 1000
+    return res.send({success: true})
 
   } catch (error) {
     return res.json(error)
   }
+})
+
+/**
+ * @route	get  users/logout
+ * @desc	logs out the user  
+ * @access	public
+ */
+router.get('/logout', (req, res) => {
+  try {
+    if(req.session)
+      res.session.destroy((err) => {
+        if(err) throw err
+        return res.json({sucess: true})
+      })
+  } catch (error) {
+    return res.json({sucess: false, msg: err})
+  }
+})
+
+
+router.get('/checkLogged', (req, res) => {
+  console.log(req.session)
+  if(req.session.userId)
+    return res.json({msg: 'good'})
+  else  
+    return res.json({msg: 'badd'})
 })
 
 // export router, making user api's available for use

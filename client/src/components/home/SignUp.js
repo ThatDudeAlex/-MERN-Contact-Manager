@@ -1,12 +1,9 @@
 import React, { useState } from "react";
+import axios from "axios";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import {
   Avatar, Button, CssBaseline, TextField, Link, Grid, Box, Typography, makeStyles, Container
 } from "@material-ui/core";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import axios from "axios";
-
-// user api connection
-// import { createNewUser } from "../apis/userApiCalls";
 
 function Copyright() {
   return (
@@ -43,9 +40,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignUp(props) {
   const classes = useStyles();
-  const {toggle} = props
+  const {toggle, login} = props
   
-  console.log(props)
+  // console.log(login)
 
   const [formValues, setFormValues] = useState({
     firstName: "",
@@ -67,7 +64,10 @@ export default function SignUp(props) {
 
     axios
       .post("http://localhost:5000/api/users/register", newUser)
-      .then(res => alert("new user added"))
+      .then(res => {
+        if(res.data.success) 
+          login(res.data.userId)
+      })
       .catch(err => console.log(err))
   };
 

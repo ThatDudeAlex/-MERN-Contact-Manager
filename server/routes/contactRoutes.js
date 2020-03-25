@@ -1,10 +1,9 @@
 const express = require("express");
-const passport = require("passport"); // authentication library
 const router = express.Router();
 
 // schemas
-const Contact = require("../models/Contact");
-const User = require("../models/User");
+const Contact = require("../database/models/Contact");
+const User = require("../database/models/User");
 
 // allowes router to parse json data
 router.use(express.json());

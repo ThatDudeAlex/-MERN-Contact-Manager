@@ -12,7 +12,6 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { NavLink, BrowserRouter, Redirect } from "react-router-dom";
 import axios from "axios";
 
 function Copyright() {
@@ -50,7 +49,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignIn(props) {
   const classes = useStyles();
-  const { toggle} = props;
+  const { toggle, login } = props;
 
   const [formValues, setFormValues] = useState({
     email: "",
@@ -62,6 +61,10 @@ export default function SignIn(props) {
     setFormValues({ ...formValues, [name]: value });
   };
 
+  // const testing = e => {
+  //   axios.get("http://localhost:5000/api/users/testing", {withCredentials: true})
+  // };
+
   const onSubmit = e => {
     e.preventDefault();
 
@@ -69,23 +72,13 @@ export default function SignIn(props) {
     const newUser = { email, password };
 
     axios
-      .post("http://localhost:5000/api/users/login", newUser)
+      .post("http://localhost:5000/api/users/login", newUser, { withCredentials:true })
       .then(res =>{
-          console.log(res)
+      if(res.data.success) 
+        login()
       })
-      // .then(json => {
-      //   if(json.data.success)
-      //     login()
-      // })
       .catch(err => alert(err))
   };
-
-  const login = () => {
-    console.log('hi')
-    return(
-      <Redirect to = '/dashboard' />
-    )
-  }
 
     return (
       <Container component="main" maxWidth="xs">
