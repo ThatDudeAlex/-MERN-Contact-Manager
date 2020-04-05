@@ -5,9 +5,8 @@ import axios from "axios";
 
 // Material-UI
 import {
-  Avatar, Button, CssBaseline, TextField, Link, Grid, 
-  Box, Typography, makeStyles, Container, CssBaseline,
-  FormControlLabel, Checkbox, Link,
+  Avatar, Button, CssBaseline, TextField, Link, Grid, Box,
+  Typography, Container, FormControlLabel, Checkbox
 } from "@material-ui/core";
 
 // Icons

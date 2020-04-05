@@ -20,20 +20,26 @@ export default function Cards({name, phone, email}) {
   
   return (
     <Card className={classes.card}>
+
+        {/* Card Header */}
         <List>
+          {/* Contact Avatar */}
           <ListItem className={classes.cardHeaderItem}>
               <Avatar className={classes.cardAvatar}>
                 <AccountCircle className={classes.cardAvatarIcon} />
               </Avatar>
           </ListItem>
 
+          {/* Contact Name */}
           <ListItem>
             <ListItemText disableTypography primary={name} className={classes.cardHeaderItem} />
           </ListItem>
         </List>
 
+      {/* Contact Info */}
       <CardContent className={classes.cardContent}>
         <List>
+          {/* Phone Number */}
           <ListItem>
             <ListItemIcon>
               <PhoneIphone className={classes.cardIcon} />
@@ -44,6 +50,7 @@ export default function Cards({name, phone, email}) {
             </ListItemText>
           </ListItem>
 
+          {/* Email */}
           <ListItem>
             <ListItemIcon>
               <Email className={classes.cardIcon} />
@@ -58,6 +65,7 @@ export default function Cards({name, phone, email}) {
 
       <Divider variant="middle" />
       
+      {/* Edit/Delete Contact */}
       <CardActions>
         <Button size="small" variant='outlined' color='primary' startIcon={<Edit />}>
           {" "}

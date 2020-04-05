@@ -2,53 +2,54 @@ import React from "react";
 
 // Material-UI Components
 import {
-  Typography, Grid, Container,
-  Button, TextField, InputAdornment
+  Typography,
+  Grid,
+  Container,
+  Button,
+  TextField,
+  InputAdornment,
 } from "@material-ui/core";
 
 // Icons
-import {Add, Search} from '@material-ui/icons'
+import { Add, Search } from "@material-ui/icons";
 
 // Styles
-import { useStyles } from "./headerStyles";
+import { useStyles } from "./styles";
 
 export default function Header(name) {
   const classes = useStyles();
 
   return (
-    <Grid item xs={12} className={classes.root}>
-      <Typography
-        component="h1"
-        variant="h2"
-        align="center"
-        color="textPrimary"
-        gutterBottom
-      >
-        Contacts
-      </Typography>
+    <Container className={classes.header} >
+      <Grid container alignItems="center" justify="center" >
 
-      <Grid container spacing={2} alignItems="center" justify="center">
+        {/* contacts banner */}
+        <Grid item className={classes.headerItems}>
+          <Typography variant="h4"> Contacts </Typography>
+        </Grid>
+
         {/* Search Bar */}
-        <Grid item>
+        <Grid item className={classes.headerItems}>
           <TextField
             placeholder="Search Contacts"
             variant="outlined"
             type="search"
             InputProps={{
+              className: classes.searchBar,
               startAdornment: (
                 <InputAdornment position="start">
                   <Search />
                 </InputAdornment>
-              )
+              ),
             }}
           />
         </Grid>
 
         {/* Add button */}
-        <Grid item>
+        <Grid item className={classes.headerItems}>
           <Button
             variant="contained"
-            color="primary"
+            className={classes.addBtn}
             size="large"
             startIcon={<Add />}
           >
@@ -56,9 +57,6 @@ export default function Header(name) {
           </Button>
         </Grid>
       </Grid>
-
-      <Container fluid className={classes.divider}></Container>
-
-    </Grid>
+    </Container>
   );
 }

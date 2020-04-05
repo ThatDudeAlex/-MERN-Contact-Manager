@@ -6,7 +6,7 @@ import { Grid, Container } from "@material-ui/core";
 // Components
 import Cards from "./Cards";
 
-const contacts = [
+const testContacts = [
   {
     name: "Alex Nunez",
     Email: "alexnunez1692@gmail.com",
@@ -22,16 +22,21 @@ const contacts = [
     Email: "tatanunez1501@gmail.com",
     phone: "333-333-3333",
   },
+  {
+    name: "Achilles Nunez",
+    Email: "achillesnunez1501@gmail.com",
+    phone: "444-444-4444",
+  }
 ];
 
-export default function contact() {
+export default function contacts() {
   return (
-    <Container fluid>
-      <Grid container direction="row" justify="space-evenly">
+    <Container maxWidth="lg" style={{paddingTop:'9%'}}>
+      <Grid container direction="row">
 
-        {contacts.map((user) => {
+        {testContacts.map((user) => {
           return (
-            <Grid item xs={12} md={6} lg={3} xl={3}>
+            <Grid item xs={12} md={6} lg={4} xl={3}>
               <Cards name={user.name} email={user.Email} phone={user.phone} />
             </Grid>
           );
