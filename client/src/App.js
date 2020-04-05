@@ -1,6 +1,6 @@
 import React from 'react';
 import {BrowserRouter, Route} from 'react-router-dom';
-import Dashboard from './components/dashboard/Album';
+import Dashboard from './pages/Dashboard';
 import Home from './pages/Home';
 
 function App() {

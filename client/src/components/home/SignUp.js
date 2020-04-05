@@ -1,9 +1,19 @@
 import React, { useState } from "react";
+
+// API library
 import axios from "axios";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+
+// Material-UI
 import {
-  Avatar, Button, CssBaseline, TextField, Link, Grid, Box, Typography, makeStyles, Container
+  Avatar, Button, CssBaseline, TextField, Link, 
+  Grid, Box, Typography, makeStyles, Container
 } from "@material-ui/core";
+
+// Icons
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+
+// Styles
+import { useStyles } from "./styles";
 
 function Copyright() {
   return (
@@ -18,31 +28,9 @@ function Copyright() {
   );
 }
 
-const useStyles = makeStyles(theme => ({
-  paper: {
-    marginTop: theme.spacing(3),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
-  },
-  avatar: {
-    margin: theme.spacing(4,1,1,1),
-    backgroundColor: theme.palette.secondary.main
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
-}));
-
 export default function SignUp(props) {
   const classes = useStyles();
   const {toggle, login} = props
-  
-  // console.log(login)
 
   const [formValues, setFormValues] = useState({
     firstName: "",
