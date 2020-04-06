@@ -29,15 +29,15 @@ const testContacts = [
   }
 ];
 
-export default function contacts() {
+export default function contacts({userContacts, addContact, deleteContact}) {
   return (
-    <Container maxWidth="lg" style={{paddingTop:'9%'}}>
+    <Container maxWidth="xl" style={{paddingTop:'9%'}}>
       <Grid container direction="row">
 
-        {testContacts.map((user) => {
+        {userContacts.map((contact) => {
           return (
             <Grid item xs={12} md={6} lg={4} xl={3}>
-              <Cards name={user.name} email={user.Email} phone={user.phone} />
+              <Cards deleteContact={deleteContact} name={contact.name} email={contact.email} phone={contact.phoneNumber} contactId={contact._id} />
             </Grid>
           );
         })}

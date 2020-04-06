@@ -16,11 +16,11 @@ import { Add, Search } from "@material-ui/icons";
 // Styles
 import { useStyles } from "./styles";
 
-export default function Header(name) {
+export default function Header({openModal}) {
   const classes = useStyles();
 
   return (
-    <Container className={classes.header} >
+    <Container maxWidth={false}  className={classes.header} >
       <Grid container alignItems="center" justify="center" >
 
         {/* contacts banner */}
@@ -52,6 +52,7 @@ export default function Header(name) {
             className={classes.addBtn}
             size="large"
             startIcon={<Add />}
+            onClick={openModal}
           >
             Add
           </Button>

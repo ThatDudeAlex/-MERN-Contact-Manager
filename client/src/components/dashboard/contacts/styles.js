@@ -2,6 +2,11 @@ import { makeStyles } from "@material-ui/core/styles";
 
 export const useStyles = makeStyles(theme => ({
   card: {
+    // position: 'relative',
+    top: '10%',
+    left: '20%',
+    // transform: 'translate(-50%, -50%) !important',
+    overflow: 'hidden',
     marginLeft: '10px',
     marginRight: '10px',
     marginBottom: '15px',
@@ -18,14 +23,15 @@ export const useStyles = makeStyles(theme => ({
   },
 
   cardAvatar: {
-    height: '80px',
-    width: '80px',
+    height: '100px',
+    width: '100px',
     backgroundColor: '#1976d2',
     border: '2px solid black'
   },
 
   cardAvatarIcon: {
-    fontSize: '80px',
+    fontSize: '90px',
+    // backgroundColor: 'black'
   },
 
   // content styles

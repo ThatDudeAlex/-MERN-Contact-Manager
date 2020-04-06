@@ -7,13 +7,9 @@ const contactSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     },
-    firstName: {
+    name: {
        type: String,
        required: true
-   },
-   lastName: {
-       type: String,
-       required: false
    },
    email: {
        type: String,

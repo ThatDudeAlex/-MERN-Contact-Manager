@@ -21,18 +21,18 @@ const errMessages = {
  * @access	public
  */
 router.get("/getAllContacts", (req, res) => {
-  // checks if user id is provided
-  if (!req.body.userId) res.json(errMessages.noUserId);
+  const { userId } = req.session
 
-  const userId = req.body.userId;
+  // checks if user id is provided
+  if (!userId) return res.json('no user');
 
   // querys DB for all contacts belonging to the user
   Contact.find({ userId: userId })
     .then(contacts => {
-      res.json(contacts);
+      return res.json(contacts);
     })
     .catch(err => {
-      res.json(err);
+      return res.json(err);
     });
 });
 
@@ -42,23 +42,25 @@ router.get("/getAllContacts", (req, res) => {
  * @access	public
  */
 router.post("/addContact", (req, res) => {
-  // checks if user id is provided
-  if (!req.body.userId) res.json(errMessages.noUserId);
+  const {name, email, phoneNumber} = req.body
+  const { userId } = req.session
 
-  const userId = req.body.userId;
+  // checks if user id is provided
+  if (!userId) return res.json('no user');
+
+  if (!name) return res.json('no name');
+  if (!email || !phoneNumber) return res.json('no email or phone number')
+
+  // const userId = req.body.userId;
 
   // create new contact object, to save into DB
   const newContact = new Contact({
-    userId: userId,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    phoneNumber: req.body.phoneNumber
+    userId, name, email, phoneNumber
   });
 
   newContact
     .save() // saves contact to DB
-    .then(() => res.json({ msg: "New contact added", success: true }))
+    .then(addedContact => res.json({ msg: "New contact added", success: true, newContact: addedContact}))
     .catch(err => {
       res.json(err);
     });
@@ -71,16 +73,18 @@ router.post("/addContact", (req, res) => {
  */
 router.delete("/deleteContact", (req, res) => {
   // checks if user id is provided
-  if (!req.body.contactId) res.json("no contact id found");
+  console.log(req.body)
+
+  if (!req.body.contactId) return res.json("no contact id found");
 
   const contactId = req.body.contactId;
 
   Contact.findOneAndDelete({ _id: contactId })
     .then(() => {
-      res.json("contact deleted");
+      return res.json({msg: "contact deleted", success: true, contactId: contactId});
     })
-    .catch(() => {
-      res.json("error while deleting contact");
+    .catch((err) => {
+      return res.json(err);
     });
 });
 

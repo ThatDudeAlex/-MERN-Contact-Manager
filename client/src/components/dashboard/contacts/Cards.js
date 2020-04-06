@@ -1,5 +1,8 @@
 import React from "react";
 
+// API library
+import axios from "axios";
+
 // Material-UI Components
 import {
   Button, Card, CardActions, CardContent,
@@ -15,8 +18,18 @@ import {
 // Styles
 import {useStyles} from './styles'
 
-export default function Cards({name, phone, email}) {
+export default function Cards({name, phone, email, contactId, deleteContact}) {
   const classes= useStyles()
+
+  const handleDeleteContact = () =>{
+    axios.delete('http://localhost:5000/api/contacts/deleteContact', {data: {contactId}}, {withCredentials: true})
+    .then(res => {
+      console.log(res.data)
+
+      if(res.data.success)
+        deleteContact(contactId)
+    })
+  }
   
   return (
     <Card className={classes.card}>
@@ -65,13 +78,13 @@ export default function Cards({name, phone, email}) {
 
       <Divider variant="middle" />
       
-      {/* Edit/Delete Contact */}
+      {/* Edit/Delete Actions */}
       <CardActions>
         <Button size="small" variant='outlined' color='primary' startIcon={<Edit />}>
           {" "}
           Edit{" "}
         </Button>
-        <Button size="small"  variant='outlined' color='secondary' startIcon={<Delete />}>
+        <Button onClick={handleDeleteContact} size="small"  variant='outlined' color='secondary' startIcon={<Delete />}>
           Delete
         </Button>
       </CardActions>
