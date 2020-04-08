@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 
 // Material-UI Components
 import {
@@ -16,11 +16,23 @@ import { Add, Search } from "@material-ui/icons";
 // Styles
 import { useStyles } from "./styles";
 
-export default function Header({openModal}) {
+// Components
+import Modal from "../modal/Modal";
+
+export default function Header({handleAddContacts}) {
   const classes = useStyles();
+  
+  const [modal, setModal] = useState(false);
+
+  const handleModal = () => {
+    setModal(!modal);
+  };
+
 
   return (
     <Container maxWidth={false}  className={classes.header} >
+      <Modal modalState={modal} handleAddContacts={handleAddContacts} handleModal={handleModal} addModal/>
+
       <Grid container alignItems="center" justify="center" >
 
         {/* contacts banner */}
@@ -34,6 +46,7 @@ export default function Header({openModal}) {
             placeholder="Search Contacts"
             variant="outlined"
             type="search"
+            // onChange={handleFilterContact}
             InputProps={{
               className: classes.searchBar,
               startAdornment: (
@@ -52,7 +65,7 @@ export default function Header({openModal}) {
             className={classes.addBtn}
             size="large"
             startIcon={<Add />}
-            onClick={openModal}
+            onClick={handleModal}
           >
             Add
           </Button>

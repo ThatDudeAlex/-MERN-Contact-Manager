@@ -3,66 +3,73 @@ import React, { useState, useEffect } from "react";
 // API library
 import axios from "axios";
 
+import { getAllContacts } from "../apis/contactsApi";
+
 // Material-UI Components
 import { Grid, CssBaseline } from "@material-ui/core";
 
 // Components
 import Header from "../components/dashboard/header/Header";
 import Contacts from "../components/dashboard/contacts/Contacts";
-import Modal from "../components/dashboard/modal/Modal";
 
 export default function Dashboard() {
-  const [modal, setModal] = useState(false);
   const [userContacts, setUserContacts] = useState([]);
 
   useEffect(() => {
     // code to run on component mount
-    getAllUserContacts();
+    getUserContacts();
   }, []);
 
-  const getAllUserContacts = () => {
-    axios
-      .get("http://localhost:5000/api/contacts/getAllContacts", {
-        withCredentials: true
-      })
-      .then((res) => {
-        const allContacts = res.data;
+  const getUserContacts = async () => {
+    const allContacts = await getAllContacts().then((res) => res);
 
-        setUserContacts([...userContacts, ...allContacts]);
-      })
-      .catch((err) => {
-        alert(err);
-      });
+    setUserContacts([...userContacts, ...allContacts]);
   };
 
   const handleAddContacts = (newContact) => {
     setUserContacts([...userContacts, newContact]);
   };
 
-  const handleDeleteContacts = (contactId) => {
-    setUserContacts(userContacts.filter(contact => { 
-      return contact._id !== contactId
-    }));
+  const handleUpdateContacts = (updatedContact) => {
+    const updatedUserContacts = userContacts.map((contact) => {
+      if (contact._id === updatedContact.contactId) return updatedContact;
+      else return contact;
+    });
+
+    setUserContacts(updatedUserContacts);
   };
 
-  const toggleModal = () => {
-    setModal(!modal);
-    console.log(userContacts);
+  const handleDeleteContacts = (contactId) => {
+    setUserContacts(
+      userContacts.filter((contact) => {
+        return contact._id !== contactId;
+      })
+    );
   };
+
+  // filters contacts by name, phone number or email
+  // const handleFilterContacts = (name) => {
+  //   setSearchString(name)
+
+  //   const filterContacts = userContacts.filter((contact) => {
+  //     return (
+  //       contact.name.toLowerCase().includes(name) ||
+  //       contact.phoneNumber.toLowerCase().includes(name) ||
+  //       contact.email.toLowerCase().includes(name)
+  //     );
+  //   });
+
+  //   setSearchedContacts(filterContacts);
+  // };
 
   return (
     <Grid container component="main">
       <CssBaseline />
-      <Header openModal={toggleModal} />
+      <Header handleAddContacts={handleAddContacts} />
       <Contacts
         userContacts={userContacts}
-        addContact={handleAddContacts}
-        deleteContact={handleDeleteContacts}
-      />
-      <Modal
-        addContact={handleAddContacts}
-        modalState={modal}
-        closeModal={toggleModal}
+        handleUpdateContacts={handleUpdateContacts}
+        handleDeleteContacts={handleDeleteContacts}
       />
     </Grid>
   );

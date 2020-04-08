@@ -68,7 +68,6 @@ export default function Cards({addContact, closeModal}) {
         withCredentials: true
       })
       .then((res) => {
-        console.log(res.data);
         addContact(res.data.newContact);
         closeModal();
       })

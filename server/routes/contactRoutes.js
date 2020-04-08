@@ -12,7 +12,7 @@ router.use(express.json());
 const errMessages = {
   noUserId: "no user id found",
   noContactId: "no contact id found",
-  invalidCred: "Invalid Email or Password"
+  invalidCred: "Invalid Email or Password",
 };
 
 /**
@@ -21,17 +21,17 @@ const errMessages = {
  * @access	public
  */
 router.get("/getAllContacts", (req, res) => {
-  const { userId } = req.session
+  const { userId } = req.session;
 
   // checks if user id is provided
-  if (!userId) return res.json('no user');
+  if (!userId) return res.json("no user");
 
   // querys DB for all contacts belonging to the user
   Contact.find({ userId: userId })
-    .then(contacts => {
+    .then((contacts) => {
       return res.json(contacts);
     })
-    .catch(err => {
+    .catch((err) => {
       return res.json(err);
     });
 });
@@ -42,26 +42,35 @@ router.get("/getAllContacts", (req, res) => {
  * @access	public
  */
 router.post("/addContact", (req, res) => {
-  const {name, email, phoneNumber} = req.body
-  const { userId } = req.session
+  const { name, email, phoneNumber } = req.body;
+  const { userId } = req.session;
 
   // checks if user id is provided
-  if (!userId) return res.json('no user');
+  if (!userId) return res.json("no user");
 
-  if (!name) return res.json('no name');
-  if (!email || !phoneNumber) return res.json('no email or phone number')
+  if (!name) return res.json("no name");
+  if (!email || !phoneNumber) return res.json("no email or phone number");
 
   // const userId = req.body.userId;
 
   // create new contact object, to save into DB
   const newContact = new Contact({
-    userId, name, email, phoneNumber
+    userId,
+    name,
+    email,
+    phoneNumber,
   });
 
   newContact
     .save() // saves contact to DB
-    .then(addedContact => res.json({ msg: "New contact added", success: true, newContact: addedContact}))
-    .catch(err => {
+    .then((addedContact) =>
+      res.json({
+        msg: "New contact added",
+        success: true,
+        newContact: addedContact,
+      })
+    )
+    .catch((err) => {
       res.json(err);
     });
 });
@@ -72,16 +81,18 @@ router.post("/addContact", (req, res) => {
  * @access	public
  */
 router.delete("/deleteContact", (req, res) => {
+  // console.log(req.body)
   // checks if user id is provided
-  console.log(req.body)
-
   if (!req.body.contactId) return res.json("no contact id found");
 
   const contactId = req.body.contactId;
-
   Contact.findOneAndDelete({ _id: contactId })
     .then(() => {
-      return res.json({msg: "contact deleted", success: true, contactId: contactId});
+      return res.json({
+        msg: "contact deleted",
+        success: true,
+        contactId: contactId,
+      });
     })
     .catch((err) => {
       return res.json(err);
@@ -95,24 +106,28 @@ router.delete("/deleteContact", (req, res) => {
  */
 router.patch("/editContact", (req, res) => {
   // checks if contact id is provided
-  if (!req.body.contactId) 
-    res.json(errMessages.noContactId);
+  if (!req.body.contactId) return res.json(errMessages.noContactId);
 
   // get data from request body
-  const { contactId, firstName, lastName, email, phoneNumber } = req.body;
+  const { contactId, name, email, phoneNumber } = req.body;
 
   // finds contact in DB
-  Contact.findOne({ _id: contactId })
-    .then(contact => {
+  Contact.findById(contactId)
+    .then((contact) => {
       // updates contact with the new info
-      contact.updateOne({ firstName, lastName, email, phoneNumber }, err => {
-        if (err) 
-          res.json(err);
+      contact.name = name;
+      contact.email = email;
+      contact.phoneNumber = phoneNumber;
 
-        res.json("contact updated");
+      contact.updateOne({ name, email, phoneNumber }, (err) => {
+        if (err) return res.json(err);
+
+        return res.json({msg:"contact updated", success:true});
       });
     })
-    .catch(err => { res.json(err) });
+    .catch((err) => {
+      res.json(err);
+    });
 });
 
 // export router, making contact api's available for use

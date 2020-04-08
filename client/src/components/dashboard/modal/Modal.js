@@ -6,20 +6,28 @@ import {Modal, Backdrop, Fade, Container}  from '@material-ui/core';
 // Styles
 import {useStyles} from './styles-modal'
 
-import NewContact from './NewContact'
+// import NewContact from './NewContact'
+import Card from '../contactCards/Cards'
 
-export default function TransitionsModal({addContact, modalState, closeModal}) {
+
+export default function TransitionsModal({handleAddContacts, handleUpdateContacts, modalState, handleModal, addModal, editModal, name, email, phone, contactId}) {
   const classes = useStyles();
+  let modalType = null;
+
+  if(addModal)
+    modalType = <Card addCard handleAddContacts={handleAddContacts} handleModal={handleModal} />
+  else if (editModal)
+    modalType = <Card editCard handleModal={handleModal} handleUpdateContacts={handleUpdateContacts} name={name} phone={phone} email={email} contactId={contactId} />
 
   return (
-    <Container  className={classes.modalContainer}>
+    <Container className={classes.modalContainer}>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         disableBackdropClick
         className={classes.modal}
         open={modalState}
-        onClose={closeModal}
+        onClose={handleModal}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
@@ -27,7 +35,8 @@ export default function TransitionsModal({addContact, modalState, closeModal}) {
         }}
       >
         <Fade in={modalState}>
-          <NewContact addContact={addContact} closeModal={closeModal} />
+          {modalType}
+          {/* <Card addCard handleModal={handleModal} /> */}
         </Fade>
       </Modal>
       </Container>
