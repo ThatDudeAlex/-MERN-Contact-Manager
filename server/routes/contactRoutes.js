@@ -1,19 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const isAuthenticated = require('../auth')
 
 // schemas
 const Contact = require("../database/models/Contact");
-const User = require("../database/models/User");
 
 // allowes router to parse json data
 router.use(express.json());
-
-// error messages for contact routes
-const errMessages = {
-  noUserId: "no user id found",
-  noContactId: "no contact id found",
-  invalidCred: "Invalid Email or Password",
-};
 
 /**
  * @route	GET  contacts/getAllContacts
@@ -24,15 +17,15 @@ router.get("/getAllContacts", (req, res) => {
   const { userId } = req.session;
 
   // checks if user id is provided
-  if (!userId) return res.json("no user");
+  if (!userId) return res.json({success:false, msg:"no user"});
 
   // querys DB for all contacts belonging to the user
   Contact.find({ userId: userId })
     .then((contacts) => {
-      return res.json(contacts);
+      return res.json({success:true, contacts:contacts});
     })
     .catch((err) => {
-      return res.json(err);
+      return res.json({success:false, msg:err});
     });
 });
 
@@ -46,11 +39,11 @@ router.post("/addContact", (req, res) => {
   const { userId } = req.session;
 
   // checks if user id is provided
-  if (!userId) return res.json("no user");
+  if (!userId) return res.json({success:false, msg:"no user"});
 
-  if (!name) return res.json("no name");
-  if (!email || !phoneNumber) return res.json("no email or phone number");
-
+  if (!name) return res.json({success:false, msg:"no name"});
+  if (!email && !phoneNumber) return res.json({success:false, msg:"no email or phone number"});
+  
   // const userId = req.body.userId;
 
   // create new contact object, to save into DB
@@ -105,11 +98,13 @@ router.delete("/deleteContact", (req, res) => {
  * @access	public
  */
 router.patch("/editContact", (req, res) => {
-  // checks if contact id is provided
-  if (!req.body.contactId) return res.json(errMessages.noContactId);
-
   // get data from request body
   const { contactId, name, email, phoneNumber } = req.body;
+  
+  // checks if contact info is provided
+  if (!req.body.contactId) return res.json({success:false, msg:'invalid contact id'});
+  if (!name) return res.json({success:false, msg:"no name"});
+  if (!email && !phoneNumber) return res.json({success:false, msg:"no email or phone number"});
 
   // finds contact in DB
   Contact.findById(contactId)
@@ -120,7 +115,7 @@ router.patch("/editContact", (req, res) => {
       contact.phoneNumber = phoneNumber;
 
       contact.updateOne({ name, email, phoneNumber }, (err) => {
-        if (err) return res.json(err);
+        if (err) return res.json({msg:err, success:false});
 
         return res.json({msg:"contact updated", success:true});
       });

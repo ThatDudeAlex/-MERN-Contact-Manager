@@ -4,7 +4,7 @@ import React from 'react';
 import {Modal, Backdrop, Fade, Container}  from '@material-ui/core';
 
 // Styles
-import {useStyles} from './styles-modal'
+import {useStyles} from './styles'
 
 // import NewContact from './NewContact'
 import Card from '../contactCards/Cards'

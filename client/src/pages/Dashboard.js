@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
 
-// API library
-import axios from "axios";
-
-import { getAllContacts } from "../apis/contactsApi";
-
 // Material-UI Components
 import { Grid, CssBaseline } from "@material-ui/core";
 
 // Components
 import Header from "../components/dashboard/header/Header";
 import Contacts from "../components/dashboard/contacts/Contacts";
+
+// API calls
+import { getAllContacts } from "../apis/contactsApi";
 
 export default function Dashboard() {
   const [userContacts, setUserContacts] = useState([]);
@@ -23,7 +21,8 @@ export default function Dashboard() {
   const getUserContacts = async () => {
     const allContacts = await getAllContacts().then((res) => res);
 
-    setUserContacts([...userContacts, ...allContacts]);
+    if(allContacts.success)
+      setUserContacts([...userContacts, ...allContacts.contacts]);
   };
 
   const handleAddContacts = (newContact) => {

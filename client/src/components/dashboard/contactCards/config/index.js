@@ -38,7 +38,7 @@ import { useStyles } from "../styles";
 import {addContact, editContact, deleteContact} from "../../../../apis/contactsApi";
 
 /*
-  Card used to display contact information
+  Card used to display available contact information
 */
 export function ContactInfoCard(props) {
   const classes = useStyles();
@@ -147,6 +147,9 @@ export function ContactInfoCard(props) {
   );
 }
 
+/*
+  Card used to add a new contact infomartion
+*/
 export function NewContanctCard({ handleModal, handleAddContacts }) {
   const classes = useStyles();
   const [contactInfo, setContactInfo] = useState({
@@ -157,8 +160,8 @@ export function NewContanctCard({ handleModal, handleAddContacts }) {
 
   const handleContactInfo = (event) => {
     const { name, value } = event.target;
+
     setContactInfo({ ...contactInfo, [name]: value });
-    console.log(contactInfo);
   };
 
   const onSubmitAdd = async (event) => {
@@ -301,6 +304,9 @@ export function NewContanctCard({ handleModal, handleAddContacts }) {
   );
 }
 
+/*
+  Card used to edit available contact information
+*/
 export function EditContactCard(props) {
   const classes = useStyles();
 

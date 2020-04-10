@@ -12,18 +12,31 @@ const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv').config();
+// const passport = require('passport')
+// const passportStrategy = require('./auth')
 
 // calls express() function and stores returning object into app
 const app = express();
 const db = require('./database/createDB') // stores database connection into db
 
+
+app.use(bodyParser.json()); // makes bodyParser able to parse json data from incoming requests 
+app.use(bodyParser.urlencoded({extended: false})) // able to parse params data from incoming requests 
+
 // sets session for tracking user login
 app.use(session({
   secret: process.env.sessionSecret,
-  resave: true,
+  resave: false,
   saveUninitialized: false,
-  store: new MongoStore({ mongooseConnection: db})
+  unset: 'destroy',
+  store: new MongoStore({ mongooseConnection: db}),
 }))
+
+// const isAuthenticated = require('./auth')
+
+// app.use(passport.initialize());
+// app.use(passport.session());
+// passportStrategy(passport)
 
 // configs cors to allow * domains.. NOT SECURE FOR PRODUCTION!, use only while in development 
 // in localhost 
@@ -35,13 +48,12 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(bodyParser.json()); // makes bodyParser able to parse json data from incoming requests 
-app.use(bodyParser.urlencoded({extended: false})) // able to parse params data from incoming requests 
 
 
 // ------- Routes -----------
 const userRoutes = require('./routes/userRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+
 
 // API route modules 
 app.use('/api/users', userRoutes);

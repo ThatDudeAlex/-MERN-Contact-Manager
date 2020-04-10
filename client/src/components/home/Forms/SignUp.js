@@ -1,16 +1,26 @@
-import React, { useState } from "react";
-
-// API library
-import axios from "axios";
+import React from "react";
 
 // Material-UI
 import {
-  Avatar, Button, CssBaseline, TextField, 
-  Link, Grid, Box, Typography, Container
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  Link,
+  Grid,
+  Box,
+  Typography,
+  Container,
 } from "@material-ui/core";
 
 // Icons
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+
+// API calls
+import { registerUser } from "../../../apis/usersApi";
+
+// Hooks
+import { useForm } from "./hooks/useForm";
 
 // Styles
 import { useStyles } from "./styles";
@@ -28,44 +38,31 @@ function Copyright() {
   );
 }
 
-export default function SignUp(props) {
+export default function SignUp({ handleFormType }) {
   const classes = useStyles();
-  const {toggle, login} = props
-
-  const [formValues, setFormValues] = useState({
+  const [values, handleChange] = useForm({
     firstName: "",
     lastName: "",
     email: "",
-    password: ""
+    password: "",
+    confirmPassword: "",
   });
 
-  const onChange = e => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
 
-  const onSubmit = e => {
-    e.preventDefault();
+  const onSubmitRegister = async(event) => {
+    event.preventDefault();
 
-    const { email, password } = formValues;
-    const newUser = { email, password };
-
-    axios
-      .post("http://localhost:5000/api/users/register", newUser)
-      .then(res => {
-        if(res.data.success) 
-          login(res.data.userId)
-      })
-      .catch(err => console.log(err))
+    const userRegistered = await registerUser(values).then((res) => res);
+    if (userRegistered.success) handleFormType();
   };
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-      <Typography component="h1" variant="h4">
+        <Typography component="h1" variant="h4">
           Contact Manager
-      </Typography>
+        </Typography>
 
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -73,7 +70,7 @@ export default function SignUp(props) {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className={classes.form} onSubmit={onSubmit} noValidate>
+        <form className={classes.form} onSubmit={onSubmitRegister} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -84,7 +81,7 @@ export default function SignUp(props) {
                 fullWidth
                 id="firstName"
                 label="First Name"
-                onChange={onChange}
+                onChange={handleChange}
                 autoFocus
               />
             </Grid>
@@ -97,7 +94,7 @@ export default function SignUp(props) {
                 label="Last Name"
                 name="lastName"
                 autoComplete="lname"
-                onChange={onChange}
+                onChange={handleChange}
               />
             </Grid>
             <Grid item xs={12}>
@@ -109,7 +106,7 @@ export default function SignUp(props) {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
-                onChange={onChange}
+                onChange={handleChange}
               />
             </Grid>
             <Grid item xs={12}>
@@ -122,7 +119,20 @@ export default function SignUp(props) {
                 type="password"
                 id="password"
                 autoComplete="current-password"
-                onChange={onChange}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="confirmPassword"
+                label="confirm Password"
+                type="password"
+                id="confirm-password"
+                autoComplete="current-password"
+                onChange={handleChange}
               />
             </Grid>
           </Grid>
@@ -137,7 +147,7 @@ export default function SignUp(props) {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="#" variant="body2" onClick={toggle}>
+              <Link href="#" variant="body2" onClick={handleFormType}>
                 Already have an account? Sign in
               </Link>
             </Grid>
