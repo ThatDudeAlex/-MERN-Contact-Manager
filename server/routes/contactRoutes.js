@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const isAuthenticated = require("../auth");
 
 // schemas
 const Contact = require("../database/models/Contact");
@@ -8,6 +7,7 @@ const Contact = require("../database/models/Contact");
 // allowes router to parse json data
 router.use(express.json());
 
+// wraps incoming functions inside an async function with try catch methods
 const asyncHandler = (incomingFunction) => {
   return async (req, res, next) => {
     try {
