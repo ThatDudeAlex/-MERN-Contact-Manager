@@ -41,17 +41,21 @@ function Copyright() {
   );
 }
 
-export default function SignIn({ handleFormType }) {
+export default function SignIn({ handleFormType, handleLogin }) {
   const classes = useStyles();
   const history = useHistory();
-  const [values, handleChange] = useForm({ email: "", password: "" });
+  const [formValues, setFormValues] = useForm({ email: "", password: "" });
 
 
   const onSubmitLogin = async (event) => {
     event.preventDefault();
 
-    const userLoggedIn = await loginUser(values).then((res) => res);
-    if (userLoggedIn.success) history.push(`/dashboard`);
+    const loginStatus = await loginUser(formValues);
+
+    if(loginStatus.success){
+      handleLogin()
+      history.push(`/dashboard`)
+    }
   };
 
   
@@ -79,7 +83,7 @@ export default function SignIn({ handleFormType }) {
             label="Email Address"
             name="email"
             autoComplete="email"
-            onChange={handleChange}
+            onChange={setFormValues}
             autoFocus
           />
           <TextField
@@ -91,7 +95,7 @@ export default function SignIn({ handleFormType }) {
             label="Password"
             type="password"
             id="password"
-            onChange={handleChange}
+            onChange={setFormValues}
             autoComplete="current-password"
           />
           <FormControlLabel

@@ -15,14 +15,20 @@ export default function Dashboard() {
 
   useEffect(() => {
     // code to run on component mount
-    getUserContacts();
+    onLoad()
   }, []);
 
-  const getUserContacts = async () => {
-    const allContacts = await getAllContacts().then((res) => res);
+  const onLoad = async() => {
+    try {
+      const allContacts = await getAllContacts();
 
-    if(allContacts.success)
-      setUserContacts([...userContacts, ...allContacts.contacts]);
+      if(allContacts.success)
+        setUserContacts([...userContacts, ...allContacts.contacts]);
+    } catch (error) {
+      alert(error)
+    }
+    
+    
   };
 
   const handleAddContacts = (newContact) => {

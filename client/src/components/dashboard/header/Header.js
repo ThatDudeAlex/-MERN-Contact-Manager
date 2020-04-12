@@ -1,7 +1,7 @@
 import React, {useState} from "react";
-// import {useHistory} from 'react-router-dom'
+import {useHistory} from 'react-router-dom'
 
-// import {logoutUser, isLoggedIn} from '../../../apis/usersApi'
+// import {logoutUser} from '../../../apis/usersApi'
 
 // Material-UI Components
 import {
@@ -24,7 +24,7 @@ import Modal from "../modal/Modal";
 
 export default function Header({handleAddContacts}) {
   const classes = useStyles();
-  // const history = useHistory()
+  const history = useHistory()
 
   const [modal, setModal] = useState(false);
 
@@ -32,12 +32,13 @@ export default function Header({handleAddContacts}) {
     setModal(!modal);
   };
 
-  const logout = () => {
-    // const work = await isLoggedIn().then(res => res)
-    // const work = await logoutUser().then(res => res)
-    // console.log(work)
-    // if(work.success)
-    //   history.goBack()
+  // under construction ------------
+  const logout = async() => {
+    // const work =await  logoutUser().then(res => res)
+
+    // if(work.success){
+    //   return history.goBack()
+    // }
   }
 
 
