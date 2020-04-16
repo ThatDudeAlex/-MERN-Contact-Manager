@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Not found 404 page
 export default () => (
   <div>
     <h1>Not Found</h1>

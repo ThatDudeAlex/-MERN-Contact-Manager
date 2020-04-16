@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {useHistory} from 'react-router-dom'
 
-// import {logoutUser} from '../../../apis/usersApi'
+import {logoutUser} from '../../../apis/usersApi'
 
 // Material-UI Components
 import {
@@ -22,23 +22,27 @@ import { useStyles } from "./styles/";
 // Components
 import Modal from "../modal/Modal";
 
-export default function Header({handleAddContacts}) {
+// Dashboard header containing search bar & add/logout buttons
+export default function Header({handleAddContacts, context}) {
   const classes = useStyles();
   const history = useHistory()
 
+  // initial state
   const [modal, setModal] = useState(false);
 
+  // closes new contact modal
   const handleModal = () => {
     setModal(!modal);
   };
 
-  // under construction ------------
+  // logs user out and redirects them to '/'
   const logout = async() => {
-    // const work =await  logoutUser().then(res => res)
+    const logoutStatus = await logoutUser().then(res => res)
 
-    // if(work.success){
-    //   return history.goBack()
-    // }
+    if(logoutStatus.success){
+      context.actions.handleLogout()
+      history.replace('/')
+    }
   }
 
 
@@ -46,8 +50,7 @@ export default function Header({handleAddContacts}) {
     <Container maxWidth={false}  className={classes.header} >
       <Modal modalState={modal} handleAddContacts={handleAddContacts} handleModal={handleModal} addModal/>
 
-      <Grid container justify="center" >
-
+      <Grid container justify="center" align="center" >
         {/* contacts banner */}
         <Grid item className={classes.headerItems}>
           <Typography variant="h4"> Contacts </Typography>
@@ -83,6 +86,7 @@ export default function Header({handleAddContacts}) {
             Add
           </Button>
         </Grid>
+
         <Grid item className={classes.headerItems}>
           <Button
             color='secondary'

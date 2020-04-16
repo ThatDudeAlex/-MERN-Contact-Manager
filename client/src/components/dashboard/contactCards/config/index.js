@@ -37,9 +37,7 @@ import { useStyles } from "../styles";
 // API Calls
 import {addContact, editContact, deleteContact} from "../../../../apis/contactsApi";
 
-/*
-  Card used to display available contact information
-*/
+// Card used to display available contact information
 export function ContactInfoCard(props) {
   const classes = useStyles();
   const [modal, setModal] = useState(false);
@@ -53,11 +51,13 @@ export function ContactInfoCard(props) {
     handleDeleteContacts,
   } = props;
 
+  // closes card modal
   const handleModal = () => {
     setModal(!modal);
   };
 
   const onSubmitDelete = async() => {
+    // API call to delete contact
     const contactDeleted =  await deleteContact(contactId).then(res => res)
 
     if(contactDeleted) handleDeleteContacts(contactId)
@@ -147,9 +147,8 @@ export function ContactInfoCard(props) {
   );
 }
 
-/*
-  Card used to add a new contact infomartion
-*/
+
+// Card used to add a new contact infomartion
 export function NewContanctCard({ handleModal, handleAddContacts }) {
   const classes = useStyles();
   const [contactInfo, setContactInfo] = useState({
@@ -173,6 +172,7 @@ export function NewContanctCard({ handleModal, handleAddContacts }) {
       phoneNumber: contactInfo.phoneNumber,
     };
 
+    // API call to add new contact
     const contactAdded = await addContact(newContact).then((res) => res);
 
     if (contactAdded.success) {
@@ -304,9 +304,7 @@ export function NewContanctCard({ handleModal, handleAddContacts }) {
   );
 }
 
-/*
-  Card used to edit available contact information
-*/
+// Card used to edit available contact information
 export function EditContactCard(props) {
   const classes = useStyles();
 
@@ -340,6 +338,7 @@ export function EditContactCard(props) {
       email: updatedInfo.updatedEmail,
     };
 
+    // API call to update contact info
     const contactEdited = await editContact(updatedContact).then((res) => res);
 
     if (contactEdited.success) {

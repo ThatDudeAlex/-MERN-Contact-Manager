@@ -6,35 +6,38 @@ import { Grid, CssBaseline } from "@material-ui/core";
 // Components
 import Header from "../components/dashboard/header/Header";
 import Contacts from "../components/dashboard/contacts/Contacts";
+import WithContext from "../components/context";
 
 // API calls
 import { getAllContacts } from "../apis/contactsApi";
 
+
+// wraps header component in HOC containing global app state/functions
+const HeaderWithContext = WithContext(Header);
+
 export default function Dashboard() {
+  // Initial state
   const [userContacts, setUserContacts] = useState([]);
 
   useEffect(() => {
     // code to run on component mount
-    onLoad()
+    onLoad();
   }, []);
 
-  const onLoad = async() => {
-    try {
-      const allContacts = await getAllContacts();
+  const onLoad = async () => {
+    // API call to retrieve all user contacts
+    const allContacts = await getAllContacts();
 
-      if(allContacts.success)
-        setUserContacts([...userContacts, ...allContacts.contacts]);
-    } catch (error) {
-      alert(error)
-    }
-    
-    
+    if (allContacts.success)
+      setUserContacts([...userContacts, ...allContacts.contacts]);
   };
 
+  // adds new contact into state
   const handleAddContacts = (newContact) => {
     setUserContacts([...userContacts, newContact]);
   };
 
+  // replaces a contact from state, with its updated version
   const handleUpdateContacts = (updatedContact) => {
     const updatedUserContacts = userContacts.map((contact) => {
       if (contact._id === updatedContact.contactId) return updatedContact;
@@ -44,6 +47,7 @@ export default function Dashboard() {
     setUserContacts(updatedUserContacts);
   };
 
+  // removes a contact from state
   const handleDeleteContacts = (contactId) => {
     setUserContacts(
       userContacts.filter((contact) => {
@@ -52,6 +56,7 @@ export default function Dashboard() {
     );
   };
 
+  // ---------- under construction ----------------------
   // filters contacts by name, phone number or email
   // const handleFilterContacts = (name) => {
   //   setSearchString(name)
@@ -70,7 +75,7 @@ export default function Dashboard() {
   return (
     <Grid container component="main">
       <CssBaseline />
-      <Header handleAddContacts={handleAddContacts} />
+      <HeaderWithContext handleAddContacts={handleAddContacts} />
       <Contacts
         userContacts={userContacts}
         handleUpdateContacts={handleUpdateContacts}

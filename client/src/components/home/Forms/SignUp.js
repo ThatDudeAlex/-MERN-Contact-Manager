@@ -16,30 +16,23 @@ import {
 // Icons
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 
+// Components
+import Copyright from './Copyright'
+
 // API calls
 import { registerUser } from "../../../apis/usersApi";
 
 // Hooks
-import { useForm } from "./hooks/useForm";
+import { useForm } from "../../hooks/useForm";
 
 // Styles
 import { useStyles } from "./styles";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Alex Nunez
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
+// User registration form
 export default function SignUp({ handleFormType }) {
   const classes = useStyles();
+
+  // Initial state
   const [values, handleChange] = useForm({
     firstName: "",
     lastName: "",
@@ -48,7 +41,7 @@ export default function SignUp({ handleFormType }) {
     confirmPassword: "",
   });
 
-
+  // executes when form is submitted
   const onSubmitRegister = async(event) => {
     event.preventDefault();
 

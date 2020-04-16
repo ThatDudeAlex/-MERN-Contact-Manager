@@ -19,41 +19,36 @@ import {
 // Icons
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 
+// Components
+import Copyright from './Copyright'
+
 // API calls
 import { loginUser } from "../../../apis/usersApi";
 
 // Hooks
-import { useForm } from "./hooks/useForm";
+import { useForm } from "../../hooks/useForm";
 
 // Styles
 import { useStyles } from "./styles";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Alex Nunez
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
+// User login form 
 export default function SignIn({ handleFormType, context }) {
   const classes = useStyles();
   const history = useHistory();
+
+  // Initial state
   const [formValues, setFormValues] = useForm({ email: "", password: "" });
 
+  // executes when form is submitted
   const onSubmitLogin = async (event) => {
     event.preventDefault();
 
+    // Api call to log user in
     const loginStatus = await loginUser(formValues);
-    console.log(loginStatus)
+
     if (loginStatus.success) {
       context.actions.handleLogin();
-      history.push(`/dashboard`);
+      history.replace(`/dashboard`);
     }
   };
 

@@ -9,7 +9,7 @@ import {useStyles} from './styles'
 // import NewContact from './NewContact'
 import Card from '../contactCards/Cards'
 
-
+// modal used to display add or edit contact cards
 export default function TransitionsModal({handleAddContacts, handleUpdateContacts, modalState, handleModal, addModal, editModal, name, email, phone, contactId}) {
   const classes = useStyles();
   let modalType = null;

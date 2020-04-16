@@ -6,12 +6,13 @@ import { Grid, Container } from "@material-ui/core";
 // Components
 import Cards from "../contactCards/Cards";
 
-export default function contacts({userContacts, ...props}) {
-  
+// Displays all user contacts 
+export default function Contacts({userContacts, ...props}) {
   return (
     <Container maxWidth="xl" style={{paddingTop:'9%'}}>
       <Grid container direction="row">
-
+        
+        {/* Iterates user contacts array and creates a card for each one */}
         {userContacts.map((contact) => {
           const {name, email, phoneNumber, _id} = contact
           const contactInfo = {name, email, phone:phoneNumber, contactId:_id, ...props}

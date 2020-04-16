@@ -1,8 +1,12 @@
 import React from "react";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
+
+// Material-UI Components
+import {CssBaseline, Paper, Grid} from "@material-ui/core"
+
+// Styles
 import { useStyles } from "./styles/home";
+
+// Components 
 import FormCards from "../components/home/FormCards";
 
 export default function Home() {

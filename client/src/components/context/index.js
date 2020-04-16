@@ -1,15 +1,18 @@
 import React, { createContext, useState, useEffect } from "react";
+
+// Components
 import {verifyUserAuth} from '../../apis/usersApi'
 
+// App global Context 
 export const ContactManagerContext = createContext();
 
-// const Provider = ContactManagerContext.Provider;
+// Global context provider, provides context to all child components 
 export const Provider = (props) => {
   // initial user authentication state
   const [isAuthenticated, setAuthentication] = useState(false);
 
-  // on component mount
   useEffect(() => {
+    // code to run on-mount 
     onLoad();
   }, []);
 
@@ -19,8 +22,14 @@ export const Provider = (props) => {
     setAuthentication(auth.success);
   };
 
+  // updates user state when logged in successfully
   const handleLogin = () => {
     setAuthentication(true);
+  };
+
+  // updates user state when logged out successfully
+  const handleLogout = () => {
+    setAuthentication(false);
   };
 
   return (
@@ -29,6 +38,7 @@ export const Provider = (props) => {
         isAuthenticated,
         actions: {
           handleLogin,
+          handleLogout
         },
       }}
     >
@@ -37,8 +47,10 @@ export const Provider = (props) => {
   );
 };
 
+// Global context consumer
 export const Consumer = ContactManagerContext.Consumer;
 
+// wraps a component and provides context to it 
 export default function withContext(Component){
     return function contextComponent(props){
         return (

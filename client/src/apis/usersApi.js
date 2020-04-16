@@ -31,14 +31,11 @@ export async function verifyUserAuth() {
 }
 
 
-// --------------- under construction
-// export function logoutUser() {
-//   return axios
-//     .post("http://localhost:5000/api/users/logout", {
-//       withCredentials: true,
-//     })
-//     .then((res) => {
-//       if (res.data.success) return { success: true };
-//       else return { success: false };
-//     })
-// }
+// 
+export async function logoutUser() {
+  const response = await axios
+      .get("http://localhost:5000/api/users/logout", 
+      {withCredentials: true})
+
+    return response.data
+}

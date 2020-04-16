@@ -4,8 +4,8 @@ export const useStyles = makeStyles(theme => ({
   header: {
     position: 'fixed',
     zIndex: '1000',
-    paddingTop: "1%",
-    paddingBottom: "1%",
+    paddingTop: "7px",
+    paddingBottom: "0px",
     marginBottom: "2%",
     backgroundColor: "#1976d2",
     boxShadow:
@@ -13,7 +13,7 @@ export const useStyles = makeStyles(theme => ({
   },
 
   headerItems: {
-    margin: "10px",
+    margin: "7px",
     color: "white",
   },
 
