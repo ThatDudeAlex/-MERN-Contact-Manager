@@ -41,24 +41,22 @@ function Copyright() {
   );
 }
 
-export default function SignIn({ handleFormType, handleLogin }) {
+export default function SignIn({ handleFormType, context }) {
   const classes = useStyles();
   const history = useHistory();
   const [formValues, setFormValues] = useForm({ email: "", password: "" });
-
 
   const onSubmitLogin = async (event) => {
     event.preventDefault();
 
     const loginStatus = await loginUser(formValues);
-
-    if(loginStatus.success){
-      handleLogin()
-      history.push(`/dashboard`)
+    console.log(loginStatus)
+    if (loginStatus.success) {
+      context.actions.handleLogin();
+      history.push(`/dashboard`);
     }
   };
 
-  
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />

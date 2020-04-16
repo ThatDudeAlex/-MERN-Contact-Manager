@@ -16,12 +16,13 @@ export async function registerUser(newUser) {
   const response = await axios
       .post("http://localhost:5000/api/users/register", newUser,
       {withCredentials: true})
-
+      .catch(err => console.log(err))
+  console.log(response)
   return response.data
 }
 
 
-export async function authStatus() {
+export async function verifyUserAuth() {
   const response = await axios
       .get("http://localhost:5000/api/users/isAuthenticated", 
       {withCredentials: true})

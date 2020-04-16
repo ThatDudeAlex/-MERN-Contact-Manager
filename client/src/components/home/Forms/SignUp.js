@@ -52,8 +52,8 @@ export default function SignUp({ handleFormType }) {
   const onSubmitRegister = async(event) => {
     event.preventDefault();
 
-    const userRegistered = await registerUser(values).then((res) => res);
-    if (userRegistered.success) handleFormType();
+      const userRegistered = await registerUser(values).then((res) => res);
+      if (userRegistered.success) handleFormType(); 
   };
 
   return (

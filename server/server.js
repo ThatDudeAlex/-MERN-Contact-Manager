@@ -42,6 +42,22 @@ app.use('/api/contacts', contactRoutes);
 // catch all 
 app.use('*', (req, res) => {res.json("catch all works, under development")})
 
+
+// -------Error Handling under construction 
+// app.use((req, res, next) => {
+//   const err = new Error("Not Found");
+//   err.status(404)
+//   console.log(err)
+//   next(err)
+// })
+
+// app.use((err, req, res, next) => {
+//   res.status(err.status || 500);
+//   return res.json({success: false, msg: err.message})
+// })
+// ----------------------------------------
+
+
 // sets port to the enviroment value or port 5000 if unavailable
 const port = process.env.PORT || 5000;
 

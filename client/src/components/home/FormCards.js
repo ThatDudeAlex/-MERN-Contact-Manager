@@ -3,8 +3,11 @@ import React, { useState } from "react";
 // Components
 import SignUp from "./Forms/SignUp";
 import SignIn from "./Forms/SignIn";
+import withContext from "../context"
 
-export default function HomeCard(props) {
+export default function HomeCard() {
+  const SignInWithContext = withContext(SignIn);
+  const SignUpWithContext = withContext(SignUp);
   const [viewForm, toggleView] = useState(true);
 
   const handleFormType = () => {
@@ -13,9 +16,9 @@ export default function HomeCard(props) {
 
   const getFormType = () => {
     if(viewForm)
-      return <SignIn handleFormType={handleFormType} handleLogin={props.handleLogin} />
+      return <SignInWithContext handleFormType={handleFormType} />
     else
-      return <SignUp handleFormType={handleFormType} />
+      return <SignUpWithContext handleFormType={handleFormType} />
   }
 
   return (
