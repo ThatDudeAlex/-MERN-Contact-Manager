@@ -8,16 +8,12 @@ import {
   TextField,
   Link,
   Grid,
-  Box,
   Typography,
   Container,
 } from "@material-ui/core";
 
 // Icons
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-
-// Components
-import Copyright from './Copyright'
 
 // API calls
 import { registerUser } from "../../../apis/usersApi";
@@ -147,9 +143,6 @@ export default function SignUp({ handleFormType }) {
           </Grid>
         </form>
       </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
     </Container>
   );
 }
