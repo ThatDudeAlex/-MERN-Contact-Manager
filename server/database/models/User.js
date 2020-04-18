@@ -21,6 +21,16 @@ const userSchema = new Schema({
         default: '',
         require: true
     },
+    passwordRecovery:{
+        token: {
+            type: String,
+            default: '',
+            require: false
+        },
+        expires: {
+            type: Date
+        }
+    },
     dateCreated: {
         type: Date,
         default: Date.now

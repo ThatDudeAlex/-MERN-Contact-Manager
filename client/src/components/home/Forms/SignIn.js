@@ -32,7 +32,7 @@ import { useForm } from "../../hooks/useForm";
 import { useStyles } from "./styles";
 
 // User login form 
-export default function SignIn({ handleFormType, context }) {
+export default function SignIn({ handleFormType, handlePasswordRecovery, context }) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -106,7 +106,7 @@ export default function SignIn({ handleFormType, context }) {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link href="#" variant="body2" onClick={handlePasswordRecovery}>
                 Forgot password?
               </Link>
             </Grid>
