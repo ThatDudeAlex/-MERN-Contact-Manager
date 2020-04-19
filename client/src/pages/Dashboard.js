@@ -11,12 +11,11 @@ import WithContext from "../components/context";
 // API calls
 import { getAllContacts } from "../apis/contactsApi";
 
-
 // wraps header component in HOC containing global app state/functions
 const HeaderWithContext = WithContext(Header);
 
 export default function Dashboard() {
-  // Initial state
+  // Stores user contacts
   const [userContacts, setUserContacts] = useState([]);
 
   useEffect(() => {
@@ -56,28 +55,14 @@ export default function Dashboard() {
     );
   };
 
-  // ---------- under construction ----------------------
-  // filters contacts by name, phone number or email
-  // const handleFilterContacts = (name) => {
-  //   setSearchString(name)
-
-  //   const filterContacts = userContacts.filter((contact) => {
-  //     return (
-  //       contact.name.toLowerCase().includes(name) ||
-  //       contact.phoneNumber.toLowerCase().includes(name) ||
-  //       contact.email.toLowerCase().includes(name)
-  //     );
-  //   });
-
-  //   setSearchedContacts(filterContacts);
-  // };
-
   return (
     <Grid container component="main">
       <CssBaseline />
-      <HeaderWithContext handleAddContacts={handleAddContacts} />
+      <HeaderWithContext />
+
       <Contacts
         userContacts={userContacts}
+        handleAddContacts={handleAddContacts} 
         handleUpdateContacts={handleUpdateContacts}
         handleDeleteContacts={handleDeleteContacts}
       />

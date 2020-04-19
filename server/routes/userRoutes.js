@@ -2,6 +2,9 @@ const express = require("express");
 const crypto = require("crypto") 
 const router = express.Router();
 
+// Error Messages
+const constErrMessage = require("../constants/errMessages")
+
 // email module
 const recoveryMail = require("../mail/transporter")
 
@@ -33,23 +36,27 @@ router.post(
     const email = req.body.email.toLowerCase();
     const { firstName, lastName, password, confirmPassword } = req.body;
 
-    // check if any required info is missing
-    if (!firstName)
-      return res.json({ success: false, msg: "missing First Name" });
-    if (!lastName)
-      return res.json({ success: false, msg: "missing Last Name" });
-    if (!email) return res.json({ success: false, msg: "no email" });
-    if (!password) return res.json({ success: false, msg: "no password" });
-    if (!confirmPassword)
-      return res.json({ success: false, msg: "missing password confirmation" });
-    
+    // stores all error messages to return
+    const errors = {firstName: "", lastName: "", password: "", confirmPassword: "", email: ""};
+
+    // sets errors for any info that is missing
+    if (!firstName) errors.firstName = constErrMessage.missingFirstName
+    if (!lastName) errors.lastName = constErrMessage.missingLastName
+    if (!email) errors.email = constErrMessage.missingEmail
+    if (!password) errors.password = constErrMessage.missingPassword
+    if (!confirmPassword) errors.confirmPassword = constErrMessage.missingPassConfirm
+
+    // returns errors if any information is missing
+    if(!firstName || !lastName || !email || !password || !confirmPassword) 
+      return res.status(400).send(errors);
+
     // verifies that passwords match
     if (password !== confirmPassword)
-      return res.json({ success: false, msg: "passwords do not match" });
+      return res.status(404).send({...errors, confirmPassword: constErrMessage.noMatch});
 
     // searches DB for email, & returns if it finds one
     const user = await User.findOne({ email });
-    if (user) return res.json({ success: false, msg: "email taken" });
+    if (user) return res.status(409).send({ ...errors, email: constErrMessage.takenEmail });
 
     // create a new user object and hashes password
     const newUser = new User({ firstName, lastName, email });
@@ -57,11 +64,7 @@ router.post(
 
     // saves user to DB
     newUser.save();
-    return res.json({
-      success: true,
-      msg: "New User Added",
-      registedUser: user,
-    });
+    return res.json(newUser);
   })
 );
 
@@ -76,24 +79,35 @@ router.post(
     const email = req.body.email.toLowerCase();
     const password = req.body.password;
 
-    // check if email or password is missing
-    if (!email) return res.json({ success: false, msg: "no email" });
-    if (!password) return res.json({ success: false, msg: "no password" });
+    // stores all error messages to return
+    const errors = {email: "", password: ""};
 
+    // sets errors if email or password are missing
+    if (!email) errors.email = constErrMessage.missingEmail
+    if (!password) errors.password = constErrMessage.missingPassword
+
+    // returns errors if email or password are missing
+    if(!email || !password)
+      return res.status(400).send(errors);
+    
     // searches DB for email, & returns if doesn't finds one
     const user = await User.findOne({ email });
-    if (!user) return res.json({ success: false, msg: "user not found" });
+    if (!user) return res.status(404).send({...errors, email: constErrMessage.incorrectEmail});
 
     // checks if the password entered matches the user password
     const correctPassword = user.validPassword(password, user.password);
     if (!correctPassword)
-      return res.json({ success: false, msg: "invalid password" });
+      return res.status(401).send({...errors, password: constErrMessage.incorrectPassword});
+
+    // formats users name to display in header
+    const usersName = `${user.firstName} ${user.lastName}`
 
     // stores userId into session and sets cookie in brower
     req.session.userId = user._id;
+    req.session.usersName = usersName
     req.session.cookie.maxAge = 5 * 60 * 60 * 1000;
 
-    return res.json({ success: true, msg: "User logged in" });
+    return res.send(usersName);
   })
 );
 
@@ -105,9 +119,11 @@ router.post(
 router.get(
   "/isAuthenticated",
   asyncHandler((req, res) => {
-    if (req.session.userId)
-      return res.json({ success: true, msg: "user is authenticated" });
-    else return res.json({ success: false, msg: "user not authenticated" });
+    if (req.session.userId){
+      const usersName = req.session.usersName
+      return res.send(usersName);
+    }
+    else return res.status(401).send("user not authenticated");
   })
 );
 
@@ -120,10 +136,10 @@ router.get(
 router.get("/logout", asyncHandler((req, res) => {
     if (req.session) {
       req.session.destroy((err) => {
-        if (err) return res.send({ success: false, msg: err });
+        if (err) return res.send({ success: false, errMsgs: err });
         else {
           req.session = null;
-          return res.send({ success: true, msg: "user logged out" });
+          return res.send({ success: true, errMsgs: "user logged out" });
         }
       });
     }
@@ -138,13 +154,14 @@ router.get("/logout", asyncHandler((req, res) => {
  */
 router.post("/passwordRecoveryEmail", asyncHandler(async(req, res) => {
   const {email} = req.body
+  const errors = { email: "", token: "", password: "", confirmPassword: "" }
 
   // check if email is missing
-  if (!email) return res.json({ success: false, msg: "no email" });
+  if (!email) return res.status(400).send({...errors, email: constErrMessage.missingEmail});
 
   // searches DB for email, & returns if doesn't finds one
   const user = await User.findOne({ email });
-  if (!user) return res.json({ success: false, msg: "user not found" });
+  if (!user) return res.status(404).send({...errors, email: constErrMessage.incorrectEmail});
 
   // generate recovery token
   const token = crypto.randomBytes(4).toString('hex')
@@ -154,7 +171,7 @@ router.post("/passwordRecoveryEmail", asyncHandler(async(req, res) => {
   
   // send email to user
   recoveryMail(email, token)
-  return res.json({ success: true, msg: "sent recovery email" });
+  return res.json("sent recovery email");
 }))
 
 
@@ -165,26 +182,27 @@ router.post("/passwordRecoveryEmail", asyncHandler(async(req, res) => {
  */
 router.post("/verifyRecoveryToken", asyncHandler(async(req, res) => {
   const {token, email} = req.body
+  const errors = { email: "", token: "", password: "", confirmPassword: "" }
   
   // check if token or email is missing
-  if (!email) return res.json({ success: false, msg: "no email" });
-  if (!token) return res.json({ success: false, msg: "no email code" });
+  if (!email) return res.status(400).send({...errors, email: constErrMessage.missingEmail});
+  if (!token) return res.status(400).send({...errors, token: constErrMessage.missingToken});
 
   // searches DB for email, & returns if doesn't finds one
   const user = await User.findOne({ email });
-  if (!user) return res.json({ success: false, msg: "user not found" });
+  if (!user) return res.status(404).send({...errors, email: constErrMessage.incorrectEmail});
 
   // compare user input with recovery token
-  if (token !== user.passwordRecovery.token) return res.json({success: false, msg: "invalid token"})
+  if (token !== user.passwordRecovery.token) return res.status(400).send({...errors, token: constErrMessage.incorrectToken})
   
   // verifies if token is expired, and remove token if it is
   if (Date.now() > user.passwordRecovery.expires){
 
     await user.update({"passwordRecovery.token": "", "passwordRecovery.expires": null})
-    return res.json({success: false, msg: "expired token"})
+    return res.status(401).send({...errors, token: constErrMessage.expiredToken})
   }
 
-  return res.json({ success: true, msg: "Valid recovery token" });  
+  return res.send("Valid recovery token");  
 }))
 
 
@@ -195,26 +213,27 @@ router.post("/verifyRecoveryToken", asyncHandler(async(req, res) => {
  */
 router.put("/recoverPassword", asyncHandler(async(req, res) => {
   const {password, confirmPassword, email} = req.body
+  const errors = { email: "", token: "", password: "", confirmPassword: "" }
 
   // check if any required info is missing
-  if (!email) return res.json({ success: false, msg: "no email" });
-  if (!password) return res.json({ success: false, msg: "no password" });
-  if (!confirmPassword)
-    return res.json({ success: false, msg: "missing password confirmation" });
+  if (!email) errors.email = constErrMessage.missingEmail
+  if (!password)  errors.password = constErrMessage.missingPassword
+  if (!confirmPassword) errors.confirmPassword = constErrMessage.missingPassConfirm
+
+  if(!email || !password || !confirmPassword)
+    return res.status(400).send(errors)
 
   // verifies that passwords match 
-  if (password !== confirmPassword)
-    return res.json({ success: false, msg: "passwords do not match" });
-
+  if (password !== confirmPassword) return res.status(400).send({...errors, confirmPassword: constErrMessage.noMatch});
 
   // searches DB for email, & returns if doesn't finds one
   const user = await User.findOne({ email });
-  if (!user) return res.json({ success: false, msg: "user not found" });
+  if (!user) return res.status(404).send({...errors, email: constErrMessage.incorrectEmail});
 
   // updates account with the new password
   await user.updateOne({ password: user.generateHash(password) })
 
-  return res.json({ success: true, msg: "Password Changed" });  
+  return res.send("Password Changed");  
 }))
 
 // export router, making user api's available for use

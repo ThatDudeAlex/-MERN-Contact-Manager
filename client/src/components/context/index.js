@@ -10,6 +10,7 @@ export const ContactManagerContext = createContext();
 export const Provider = (props) => {
   // initial user authentication state
   const [isAuthenticated, setAuthentication] = useState(false);
+  const [loggedinUser, setLoggedinUser] = useState('');
 
   useEffect(() => {
     // code to run on-mount 
@@ -18,12 +19,16 @@ export const Provider = (props) => {
 
   // gets & sets user authentication state on component render
   const onLoad = async () => {
-    const auth = await verifyUserAuth();
-    setAuthentication(auth.success);
+    const authUser = await verifyUserAuth();
+    if(authUser){
+      setLoggedinUser(authUser)
+      setAuthentication(true);
+    }
   };
 
   // updates user state when logged in successfully
-  const handleLogin = () => {
+  const handleLogin = (usersName) => {
+    setLoggedinUser(usersName)
     setAuthentication(true);
   };
 
@@ -36,6 +41,7 @@ export const Provider = (props) => {
     <ContactManagerContext.Provider
       value={{
         isAuthenticated,
+        loggedinUser,
         actions: {
           handleLogin,
           handleLogout

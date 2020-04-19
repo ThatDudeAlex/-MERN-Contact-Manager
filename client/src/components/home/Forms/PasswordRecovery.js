@@ -45,6 +45,8 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
     token: false,
     password: false,
   });
+  // Initial Error States
+  const [errorMsgs, setErrMessages] = useState({ email: "", token: "", password: "", confirmPassword: "" });
 
   // Hides email form & displays token form
   const handletokenVisibility = () => {
@@ -64,14 +66,19 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
     });
   };
 
+    // controls the setting of error messages
+    const handleErrState = (state) => {
+      setErrMessages(state)
+    }
+
   // receives user email input
   const onSubmitEmail = async (event) => {
     event.preventDefault();
 
     // Api call
-    const response = await passwordRecoveryEmail(formValues);
-
-    if (response.success) 
+    const success = await passwordRecoveryEmail(formValues, handleErrState);
+    console.log(success)
+    if (success) 
       handletokenVisibility();
   };
 
@@ -80,9 +87,9 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
     event.preventDefault();
     
     // Api call
-    const response = await verifyRecoveryCode(formValues);
+    const success = await verifyRecoveryCode(formValues, handleErrState);
     
-    if (response.success) 
+    if (success) 
       handlePasswordVisibility()
   };
 
@@ -91,9 +98,9 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
     event.preventDefault();
 
     // Api call
-    const response = await recoverPassword(formValues);
+    const response = await recoverPassword(formValues, handleErrState);
 
-    if (response.success) {
+    if (response) {
       alert("Your password has been updated")
       handlePasswordRecovery()
     }
@@ -122,6 +129,8 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
               variant="outlined"
               margin="normal"
               required
+              error={errorMsgs.email.length === 0 ? false : true}
+              helperText={errorMsgs.email}
               fullWidth
               id="email"
               label="Please enter your email to search for your account"
@@ -148,6 +157,8 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
               variant="outlined"
               margin="normal"
               required
+              error={errorMsgs.token.length === 0 ? false : true}
+              helperText={errorMsgs.token}
               fullWidth
               id="token"
               label="Enter Password Recovery token"
@@ -174,6 +185,8 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
               margin="normal"
               type="password"
               required
+              error={errorMsgs.password.length === 0 ? false : true}
+              helperText={errorMsgs.password}
               fullWidth
               id="password"
               label="Enter New Password"
@@ -187,6 +200,8 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
               margin="normal"
               required
               fullWidth
+              error={errorMsgs.confirmPassword.length === 0 ? false : true}
+              helperText={errorMsgs.confirmPassword}
               type="password"
               id="confirmPassword"
               label="Confirm New Password"

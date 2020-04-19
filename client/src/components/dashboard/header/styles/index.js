@@ -13,13 +13,18 @@ export const useStyles = makeStyles(theme => ({
   },
 
   headerItems: {
-    margin: "7px",
-    color: "white",
+    // margin: "10px",
+    color: "white !important",
   },
 
   searchBar: {
     backgroundColor: "white",
     color: "black",
+  },
+  logoutBtn: {
+    "& hover": {
+      color: "#268745"
+    }
   },
 
   addBtn: {

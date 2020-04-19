@@ -151,11 +151,24 @@ export function ContactInfoCard(props) {
 // Card used to add a new contact infomartion
 export function NewContanctCard({ handleModal, handleAddContacts }) {
   const classes = useStyles();
+
+  // const [contactPicture, setContactPicture] = usePicture()
+  const [contactPicture, setContactPicture] = useState()
   const [contactInfo, setContactInfo] = useState({
     name: "",
     email: "",
     phoneNumber: "",
   });
+
+  const setDefaultAvatar = () => {
+    if (contactPicture === "")
+      return <AccountCircle className={classes.cardAvatarIcon} />
+  }
+
+  const handleImgSelection = (event) => {
+    console.log(contactPicture)
+    setContactPicture(URL.createObjectURL(event.target.files[0]))
+  };
 
   const handleContactInfo = (event) => {
     const { name, value } = event.target;
@@ -188,18 +201,19 @@ export function NewContanctCard({ handleModal, handleAddContacts }) {
         <ListItem className={classes.cardHeaderItem}>
           {/* Contact Avatar */}
           <Avatar
-            // src={contactImg}
+            src={contactPicture}
             alt="contact image"
             className={classes.cardAvatar}
           >
-            <AccountCircle className={classes.cardAvatarIcon} />
+            {setDefaultAvatar()}
+            {/* <AccountCircle className={classes.cardAvatarIcon} /> */}
           </Avatar>
         </ListItem>
 
         {/* Upload Img Btn */}
         <ListItem className={classes.cardHeaderItem}>
           <input
-            // onChange={handleImgSelection}
+            onChange={handleImgSelection}
             style={{ display: "none" }}
             accept="image/*"
             className={classes.input}

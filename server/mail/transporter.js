@@ -24,6 +24,7 @@ module.exports = async(email, token) => {
          <p>This token will expire in 1 hour if not used</p>
          <p>Thanks,<br/>Alex Nunez</p>`
       }, (err) => {
-          console.log(err)
+          if (err)
+            console.log(err)
       });
 }

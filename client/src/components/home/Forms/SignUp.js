@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 
 // Material-UI
 import {
@@ -37,13 +37,20 @@ export default function SignUp({ handleFormType }) {
     confirmPassword: "",
   });
 
+  const [errorMsgs, setErrMessages] = useState({ firstName: "", lastName: "", email: "", password: "", confirmPassword: "" });
+
   // executes when form is submitted
   const onSubmitRegister = async(event) => {
     event.preventDefault();
 
-      const userRegistered = await registerUser(values).then((res) => res);
-      if (userRegistered.success) handleFormType(); 
+      const user = await registerUser(values, handleErrState);
+      if (user) handleFormType(); 
   };
+
+  // controls the setting of error messages
+  const handleErrState = (state) => {
+    setErrMessages(state)
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -66,6 +73,8 @@ export default function SignUp({ handleFormType }) {
                 autoComplete="fname"
                 name="firstName"
                 variant="outlined"
+                error={errorMsgs.firstName.length === 0 ? false : true}
+                helperText={errorMsgs.firstName}
                 required
                 fullWidth
                 id="firstName"
@@ -79,6 +88,8 @@ export default function SignUp({ handleFormType }) {
                 variant="outlined"
                 required
                 fullWidth
+                error={errorMsgs.lastName.length === 0 ? false : true}
+                helperText={errorMsgs.lastName}
                 id="lastName"
                 label="Last Name"
                 name="lastName"
@@ -91,6 +102,8 @@ export default function SignUp({ handleFormType }) {
                 variant="outlined"
                 required
                 fullWidth
+                error={errorMsgs.email.length === 0 ? false : true}
+                helperText={errorMsgs.email}
                 id="email"
                 label="Email Address"
                 name="email"
@@ -103,6 +116,8 @@ export default function SignUp({ handleFormType }) {
                 variant="outlined"
                 required
                 fullWidth
+                error={errorMsgs.password.length === 0 ? false : true}
+                helperText={errorMsgs.password}
                 name="password"
                 label="Password"
                 type="password"
@@ -116,6 +131,8 @@ export default function SignUp({ handleFormType }) {
                 variant="outlined"
                 required
                 fullWidth
+                error={errorMsgs.confirmPassword.length === 0 ? false : true}
+                helperText={errorMsgs.confirmPassword}
                 name="confirmPassword"
                 label="confirm Password"
                 type="password"

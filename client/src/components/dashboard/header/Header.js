@@ -1,7 +1,7 @@
-import React, {useState} from "react";
-import {useHistory} from 'react-router-dom'
+import React from "react";
+import { useHistory } from "react-router-dom";
 
-import {logoutUser} from '../../../apis/usersApi'
+import { logoutUser } from "../../../apis/usersApi";
 
 // Material-UI Components
 import {
@@ -9,97 +9,69 @@ import {
   Grid,
   Container,
   Button,
-  TextField,
-  InputAdornment,
 } from "@material-ui/core";
 
 // Icons
-import { Add, Search } from "@material-ui/icons";
+import { AccountCircle } from "@material-ui/icons";
 
 // Styles
 import { useStyles } from "./styles/";
 
 // Components
-import Modal from "../modal/Modal";
+// import Modal from "../modal/Modal";
 
 // Dashboard header containing search bar & add/logout buttons
-export default function Header({handleAddContacts, context}) {
+export default function Header({ context }) {
   const classes = useStyles();
-  const history = useHistory()
-
-  // initial state
-  const [modal, setModal] = useState(false);
-
-  // closes new contact modal
-  const handleModal = () => {
-    setModal(!modal);
-  };
+  const history = useHistory();
 
   // logs user out and redirects them to '/'
-  const logout = async() => {
-    const logoutStatus = await logoutUser().then(res => res)
+  const logout = async () => {
+    const logoutStatus = await logoutUser().then((res) => res);
 
-    if(logoutStatus.success){
-      context.actions.handleLogout()
-      history.replace('/')
+    if (logoutStatus.success) {
+      context.actions.handleLogout();
+      history.replace("/");
     }
-  }
-
+  };
 
   return (
-    <Container maxWidth={false}  className={classes.header} >
-      <Modal modalState={modal} handleAddContacts={handleAddContacts} handleModal={handleModal} addModal/>
-
-      <Grid container justify="center" align="center" >
+    <Container maxWidth={false} className={classes.header}>
+      <Container>
         {/* contacts banner */}
-        <Grid item className={classes.headerItems}>
-          <Typography variant="h4"> Contacts </Typography>
-        </Grid>
+        <Grid container justify="flex-end" alignItems="center">
+          {/* User Icon */}
+          <Grid item className={classes.headerItems}>
+            <AccountCircle fontSize="large" />
+          </Grid>
 
-        {/* Search Bar */}
-        <Grid item className={classes.headerItems}>
-          <TextField
-            placeholder="Search Contacts"
-            variant="outlined"
-            type="search"
-            // onChange={handleFilterContact}
-            InputProps={{
-              className: classes.searchBar,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              ),
+          {/* Users Name */}
+          <Grid
+            item
+            className={classes.headerItems}
+            style={{
+              marginLeft: "3px",
+              paddingRight: "10px",
+              borderRight: "solid white 1px",
             }}
-          />
-        </Grid>
-
-        {/* Add button */}
-        <Grid item className={classes.headerItems}>
-          <Button
-            variant="contained"
-            className={classes.addBtn}
-            size="large"
-            startIcon={<Add />}
-            onClick={handleModal}
           >
-            Add
-          </Button>
-        </Grid>
+            <Typography variant="button"> {context.loggedinUser} </Typography>
+          </Grid>
 
-        <Grid item className={classes.headerItems}>
-          <Button
-            color='secondary'
-            variant="contained"
-            // className={classes.addBtn}
-            size="large"
-            startIcon={<Add />}
-            onClick={logout}
-          >
-            logout
-          </Button>
+          {/* Logout Button */}
+          <Grid item>
+            <Button
+              style={{ color: "white" }}
+              className={classes.logoutBtn}
+              size="large"
+              onClick={logout}
+            >
+              logout
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
+      </Container>
+
     </Container>
   );
 }
