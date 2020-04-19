@@ -20,7 +20,11 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Copyright from "./Copyright";
 
 // API calls
-import { passwordRecoveryEmail, verifyRecoveryCode, recoverPassword } from "../../../apis/usersApi";
+import {
+  passwordRecoveryEmail,
+  verifyRecoveryCode,
+  recoverPassword,
+} from "../../../apis/usersApi";
 
 // Hooks
 import { useForm } from "../../hooks/useForm";
@@ -46,7 +50,12 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
     password: false,
   });
   // Initial Error States
-  const [errorMsgs, setErrMessages] = useState({ email: "", token: "", password: "", confirmPassword: "" });
+  const [errorMsgs, setErrMessages] = useState({
+    email: "",
+    token: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   // Hides email form & displays token form
   const handletokenVisibility = () => {
@@ -66,46 +75,50 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
     });
   };
 
-    // controls the setting of error messages
-    const handleErrState = (state) => {
-      setErrMessages(state)
-    }
+  // Sets email related errors
+  const handleEmailErr = (err) => {
+    setErrMessages({...errorMsgs, email: err})
+  }
 
-  // receives user email input
+  // Sets token related errors
+  const handleTokenErr = (err) => {
+    setErrMessages({...errorMsgs, token: err})
+  }
+
+  // Sets password & confirm password errors
+  const handlePasswordErr = (err) => {
+    setErrMessages({...errorMsgs, password: err.password, confirmPassword: err.confirmPassword})
+  }
+
+  // Receives user email input
   const onSubmitEmail = async (event) => {
     event.preventDefault();
 
     // Api call
-    const success = await passwordRecoveryEmail(formValues, handleErrState);
-    console.log(success)
-    if (success) 
-      handletokenVisibility();
+    const success = await passwordRecoveryEmail(formValues, handleEmailErr);
+    if (success) handletokenVisibility();
   };
 
-  // receives user recovery token input
+  // Receives user recovery token input
   const onSubmitToken = async (event) => {
     event.preventDefault();
-    
+
     // Api call
-    const success = await verifyRecoveryCode(formValues, handleErrState);
-    
-    if (success) 
-      handlePasswordVisibility()
+    const success = await verifyRecoveryCode(formValues, handleTokenErr);
+    if (success) handlePasswordVisibility();
   };
 
-  // receives users updated account password
+  // Receives users updated account password
   const onSubmitPassword = async (event) => {
     event.preventDefault();
 
     // Api call
-    const response = await recoverPassword(formValues, handleErrState);
-
+    const response = await recoverPassword(formValues, handlePasswordErr);
     if (response) {
-      alert("Your password has been updated")
-      handlePasswordRecovery()
+      alert("Your password has been updated");
+      handlePasswordRecovery();
     }
   };
-
 
   return (
     <Container component="main" maxWidth="xs">
@@ -217,7 +230,7 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
               color="primary"
               className={classes.submit}
             >
-              Update Password 
+              Update Password
             </Button>
           </Collapse>
 

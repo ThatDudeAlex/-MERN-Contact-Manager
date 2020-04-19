@@ -43,20 +43,27 @@ export default function SignIn({
 
   // Initial state
   const [formValues, setFormValues] = useForm({ email: "", password: "" });
+  const [rememberMe, setRememberMe] = useState(false)
   const [errorMsgs, setErrMessages] = useState({ email: "", password: "" });
 
   // executes when form is submitted
   const onSubmitLogin = async (event) => {
     event.preventDefault();
 
+    const payload = {...formValues, rememberMe}
+
     // Api call to log user in
-    const user = await loginUser(formValues, handleErrState);
+    const user = await loginUser(payload, handleErrState);
 
     if (user) {
       context.actions.handleLogin(user);
       history.replace(`/dashboard`);
     }
   };
+
+  const handleRememberMe = () => {
+    setRememberMe(!rememberMe)
+  }
 
   // controls the setting of error messages
   const handleErrState = (state) => {
@@ -109,7 +116,7 @@ export default function SignIn({
           />
 
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+            control={<Checkbox value="remember" color="primary" onChange={handleRememberMe} />}
             label="Remember me"
           />
 

@@ -77,7 +77,7 @@ router.post(
   "/login",
   asyncHandler(async (req, res) => {
     const email = req.body.email.toLowerCase();
-    const password = req.body.password;
+    const { password, rememberMe } = req.body;
 
     // stores all error messages to return
     const errors = {email: "", password: ""};
@@ -105,7 +105,12 @@ router.post(
     // stores userId into session and sets cookie in brower
     req.session.userId = user._id;
     req.session.usersName = usersName
-    req.session.cookie.maxAge = 5 * 60 * 60 * 1000;
+
+    // if remember is checked, set session to expire in 5yrs ( in milli seconds )
+    // else set it to expire in 1 hour
+    // yrs * days * hrs * mins * secs * milliSecs
+    if(rememberMe) req.session.cookie.maxAge =  5 * 365 * 24 * 60 * 60 * 1000;
+    else req.session.cookie.maxAge = 60 * 60 * 1000
 
     return res.send(usersName);
   })
@@ -154,14 +159,13 @@ router.get("/logout", asyncHandler((req, res) => {
  */
 router.post("/passwordRecoveryEmail", asyncHandler(async(req, res) => {
   const {email} = req.body
-  const errors = { email: "", token: "", password: "", confirmPassword: "" }
 
   // check if email is missing
-  if (!email) return res.status(400).send({...errors, email: constErrMessage.missingEmail});
+  if (!email) return res.status(400).send( constErrMessage.missingEmail );
 
   // searches DB for email, & returns if doesn't finds one
   const user = await User.findOne({ email });
-  if (!user) return res.status(404).send({...errors, email: constErrMessage.incorrectEmail});
+  if (!user) return res.status(404).send(constErrMessage.incorrectEmail );
 
   // generate recovery token
   const token = crypto.randomBytes(4).toString('hex')
@@ -182,24 +186,23 @@ router.post("/passwordRecoveryEmail", asyncHandler(async(req, res) => {
  */
 router.post("/verifyRecoveryToken", asyncHandler(async(req, res) => {
   const {token, email} = req.body
-  const errors = { email: "", token: "", password: "", confirmPassword: "" }
   
   // check if token or email is missing
-  if (!email) return res.status(400).send({...errors, email: constErrMessage.missingEmail});
-  if (!token) return res.status(400).send({...errors, token: constErrMessage.missingToken});
+  if (!email) return res.status(400).send(constErrMessage.missingEmail);
+  if (!token) return res.status(400).send(constErrMessage.missingToken);
 
   // searches DB for email, & returns if doesn't finds one
   const user = await User.findOne({ email });
-  if (!user) return res.status(404).send({...errors, email: constErrMessage.incorrectEmail});
+  if (!user) return res.status(404).send(constErrMessage.incorrectEmail);
 
   // compare user input with recovery token
-  if (token !== user.passwordRecovery.token) return res.status(400).send({...errors, token: constErrMessage.incorrectToken})
+  if (token !== user.passwordRecovery.token) return res.status(400).send(constErrMessage.incorrectToken)
   
   // verifies if token is expired, and remove token if it is
   if (Date.now() > user.passwordRecovery.expires){
 
     await user.update({"passwordRecovery.token": "", "passwordRecovery.expires": null})
-    return res.status(401).send({...errors, token: constErrMessage.expiredToken})
+    return res.status(401).send(constErrMessage.expiredToken)
   }
 
   return res.send("Valid recovery token");  
@@ -213,7 +216,7 @@ router.post("/verifyRecoveryToken", asyncHandler(async(req, res) => {
  */
 router.put("/recoverPassword", asyncHandler(async(req, res) => {
   const {password, confirmPassword, email} = req.body
-  const errors = { email: "", token: "", password: "", confirmPassword: "" }
+  const errors = { password: "", confirmPassword: "" }
 
   // check if any required info is missing
   if (!email) errors.email = constErrMessage.missingEmail

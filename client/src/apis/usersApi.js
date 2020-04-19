@@ -61,7 +61,6 @@ export async function passwordRecoveryEmail(userInfo, setErrors) {
   )
   .then(res => res.data)
   .catch(error => {
-    console.log(error.response.data)
     if(error.response) setErrors(error.response.data);
   })
 

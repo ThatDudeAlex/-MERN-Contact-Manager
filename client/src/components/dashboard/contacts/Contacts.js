@@ -112,7 +112,10 @@ export default function Contacts({ userContacts, handleAddContacts, ...props }) 
           };
 
           return (
-            <Grow in={contactsLoaded} key={contact._id}>
+            <Grow in={contactsLoaded} key={contact._id} 
+            style={{ transformOrigin: '0 0 0' }}
+          {...(contactsLoaded ? { timeout: 1000 } : {})}
+          >
               <Grid item xs={12} md={6} lg={4} xl={3}>
                 <Cards infoCard {...contactInfo} />
               </Grid>
