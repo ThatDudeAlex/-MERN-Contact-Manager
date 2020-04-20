@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
-// Material-UI
+// Material-UI Components
 import {
   Avatar,
   Button,
   CssBaseline,
   TextField,
-  Link,
   Grid,
   Box,
   Typography,
@@ -16,10 +15,10 @@ import {
   Checkbox,
 } from "@material-ui/core";
 
-// Icons
+// Material-UI Icons
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 
-// Components
+// Custom Components
 import Copyright from "./Copyright";
 
 // API calls
@@ -31,11 +30,10 @@ import { useForm } from "../../hooks/useForm";
 // Styles
 import { useStyles } from "./styles";
 
-
 // User login form
 export default function SignIn({
-  handleFormType,
-  handlePasswordRecovery,
+  handleStandardForms,
+  handleRecoveryForm,
   context,
 }) {
   const classes = useStyles();
@@ -43,14 +41,14 @@ export default function SignIn({
 
   // Initial state
   const [formValues, setFormValues] = useForm({ email: "", password: "" });
-  const [rememberMe, setRememberMe] = useState(false)
-  const [errorMsgs, setErrMessages] = useState({ email: "", password: "" });
+  const [rememberMe, setRememberMe] = useState(false);
+  const [errorMsgs, setErrMsgs] = useState({ email: "", password: "" });
 
   // executes when form is submitted
   const onSubmitLogin = async (event) => {
     event.preventDefault();
 
-    const payload = {...formValues, rememberMe}
+    const payload = { ...formValues, rememberMe };
 
     // Api call to log user in
     const user = await loginUser(payload, handleErrState);
@@ -61,19 +59,21 @@ export default function SignIn({
     }
   };
 
+  // Controls remember me button state
   const handleRememberMe = () => {
-    setRememberMe(!rememberMe)
-  }
+    setRememberMe(!rememberMe);
+  };
 
-  // controls the setting of error messages
+  // Controls error messages state
   const handleErrState = (state) => {
-    setErrMessages(state)
-  }
+    setErrMsgs(state);
+  };
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
+        {/* Form Header */}
         <Typography component="h1" variant="h4">
           Contact Manager
         </Typography>
@@ -81,11 +81,14 @@ export default function SignIn({
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
+
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
 
+        {/* SignIn Form */}
         <form className={classes.form} onSubmit={onSubmitLogin} noValidate>
+          {/* User Email Input */}
           <TextField
             variant="outlined"
             margin="normal"
@@ -100,6 +103,8 @@ export default function SignIn({
             onChange={setFormValues}
             autoFocus
           />
+
+          {/* User Password Input */}
           <TextField
             variant="outlined"
             margin="normal"
@@ -115,11 +120,19 @@ export default function SignIn({
             autoComplete="current-password"
           />
 
+          {/* Remember Me Checkbox */}
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" onChange={handleRememberMe} />}
+            control={
+              <Checkbox
+                value="remember"
+                color="primary"
+                onChange={handleRememberMe}
+              />
+            }
             label="Remember me"
           />
 
+          {/* Submit Button */}
           <Button
             type="submit"
             fullWidth
@@ -129,22 +142,26 @@ export default function SignIn({
           >
             Sign In
           </Button>
-
+          
+          {/* Toggle Password Recovery Form */}
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2" onClick={handlePasswordRecovery}>
+              <Button color="primary" className={classes.linkButton} onClick={handleRecoveryForm}>
                 Forgot password?
-              </Link>
+              </Button>
             </Grid>
-
+            
+            {/* Toggle SignUp Form */}
             <Grid item>
-              <Link href="#" variant="body2" onClick={handleFormType}>
+              <Button color="primary" className={classes.linkButton} onClick={handleStandardForms}>
                 Don't have an account? Sign Up
-              </Link>
+              </Button>
             </Grid>
           </Grid>
         </form>
       </div>
+
+      {/* Engineer's Signature */}
       <Box mt={8}>
         <Copyright />
       </Box>

@@ -6,7 +6,7 @@ import {CssBaseline, Paper, Grid} from "@material-ui/core"
 // Styles
 import { useStyles } from "./styles/home";
 
-// Components 
+// Custom Components
 import FormCards from "../components/home/FormCards";
 
 export default function Home() {

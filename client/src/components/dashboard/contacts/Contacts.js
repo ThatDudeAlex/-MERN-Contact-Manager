@@ -10,12 +10,12 @@ import {
   Grow
 } from "@material-ui/core";
 
-// Icons
+// Material-UI Icons
 import { Add, Search } from "@material-ui/icons";
 
-// Components
-import Cards from "../contactCards/Cards";
-import Modal from "../modal/Modal";
+// Custom Components
+import InfoCard from "./ContactCards/InfoCard"
+import ModalCard from "./ContactCards/ModalCard";
 
 // Styles
 import { useStyles } from "./styles/";
@@ -57,11 +57,11 @@ export default function Contacts({ userContacts, handleAddContacts, ...props }) 
 
   return (
     <Container maxWidth="xl" style={{ paddingTop: "3.5%" }}>
-      <Modal
+      <ModalCard
         modalState={modalState}
         handleAddContacts={handleAddContacts}
         handleModal={handleModal}
-        addModal
+        addCard
       />
 
       <Grid container justify="center" alignContent="center">
@@ -103,21 +103,22 @@ export default function Contacts({ userContacts, handleAddContacts, ...props }) 
         {/* Iterates user contacts array and creates a card for each one */}
         {visibleContacts.map((contact) => {
           const { name, email, phoneNumber, _id } = contact;
+          {/* console.log(contact) */}
           const contactInfo = {
             name,
             email,
             phone: phoneNumber,
-            contactId: _id,
+            _id: _id,
             ...props,
           };
 
           return (
             <Grow in={contactsLoaded} key={contact._id} 
-            style={{ transformOrigin: '0 0 0' }}
-          {...(contactsLoaded ? { timeout: 1000 } : {})}
-          >
+              style={{ transformOrigin: '0 0 0' }}
+              {...(contactsLoaded ? { timeout: 1000 } : {})}
+            >
               <Grid item xs={12} md={6} lg={4} xl={3}>
-                <Cards infoCard {...contactInfo} />
+                <InfoCard {...contactInfo} />
               </Grid>
             </Grow>
           );

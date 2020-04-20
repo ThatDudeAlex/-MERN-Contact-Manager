@@ -1,6 +1,6 @@
 import React from "react";
 
-// Material-UI
+// Material-UI Components
 import { Link, Typography } from "@material-ui/core";
 
 // copyright footer with current year

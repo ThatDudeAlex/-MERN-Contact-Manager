@@ -5,7 +5,7 @@ import {
   Switch
 } from "react-router-dom";
 
-// Components
+// Custom Components
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import ProtectedRoute from "./routes/ProtectedRoute";

@@ -1,19 +1,21 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
-// Material-UI
+// Material-UI Components
 import {
   Avatar,
   Button,
   CssBaseline,
   TextField,
-  Link,
   Grid,
   Typography,
   Container,
 } from "@material-ui/core";
 
-// Icons
+// Material-UI Icons
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+
+// Custom Components
+import FormHeader from "./FormHeader";
 
 // API calls
 import { registerUser } from "../../../apis/usersApi";
@@ -25,10 +27,10 @@ import { useForm } from "../../hooks/useForm";
 import { useStyles } from "./styles";
 
 // User registration form
-export default function SignUp({ handleFormType }) {
+export default function SignUp({ handleStandardForms }) {
   const classes = useStyles();
 
-  // Initial state
+  // Initial form state
   const [values, handleChange] = useForm({
     firstName: "",
     lastName: "",
@@ -37,25 +39,35 @@ export default function SignUp({ handleFormType }) {
     confirmPassword: "",
   });
 
-  const [errorMsgs, setErrMessages] = useState({ firstName: "", lastName: "", email: "", password: "", confirmPassword: "" });
+  // Initial Error msg state
+  const [errorMsgs, setErrMsgs] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   // executes when form is submitted
-  const onSubmitRegister = async(event) => {
+  const onSubmitRegister = async (event) => {
     event.preventDefault();
 
-      const user = await registerUser(values, handleErrState);
-      if (user) handleFormType(); 
+    const user = await registerUser(values, handleErrState);
+    if (user) handleStandardForms();
   };
 
   // controls the setting of error messages
   const handleErrState = (state) => {
-    setErrMessages(state)
-  }
+    setErrMsgs(state);
+  };
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
+        {/* ---under construcion --- avatar doesnt align horizrontally */}
+        {/* <FormHeader formName="Sign Up" /> */}
+
         <Typography component="h1" variant="h4">
           Contact Manager
         </Typography>
@@ -63,11 +75,15 @@ export default function SignUp({ handleFormType }) {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
+
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
+
+        {/* SignIn Form */}
         <form className={classes.form} onSubmit={onSubmitRegister} noValidate>
           <Grid container spacing={2}>
+            {/* Users First Name Input */}
             <Grid item xs={12} sm={6}>
               <TextField
                 autoComplete="fname"
@@ -83,6 +99,8 @@ export default function SignUp({ handleFormType }) {
                 autoFocus
               />
             </Grid>
+
+            {/* Users Last Name Input */}
             <Grid item xs={12} sm={6}>
               <TextField
                 variant="outlined"
@@ -97,6 +115,8 @@ export default function SignUp({ handleFormType }) {
                 onChange={handleChange}
               />
             </Grid>
+
+            {/* Users Email input */}
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -111,6 +131,8 @@ export default function SignUp({ handleFormType }) {
                 onChange={handleChange}
               />
             </Grid>
+
+            {/* Users Password input */}
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -126,6 +148,8 @@ export default function SignUp({ handleFormType }) {
                 onChange={handleChange}
               />
             </Grid>
+
+            {/* Users Confirm Password input */}
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -142,6 +166,8 @@ export default function SignUp({ handleFormType }) {
               />
             </Grid>
           </Grid>
+
+          {/* Register Button */}
           <Button
             type="submit"
             fullWidth
@@ -151,11 +177,13 @@ export default function SignUp({ handleFormType }) {
           >
             Sign Up
           </Button>
+
+          {/* Toggle SignIn Form */}
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="#" variant="body2" onClick={handleFormType}>
+              <Button color="primary" className={classes.linkButton} onClick={handleStandardForms}>
                 Already have an account? Sign in
-              </Link>
+              </Button>
             </Grid>
           </Grid>
         </form>

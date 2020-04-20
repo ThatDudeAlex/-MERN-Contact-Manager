@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 // Material-UI Components
 import { Grid, CssBaseline } from "@material-ui/core";
 
-// Components
+// Custom Components
 import Header from "../components/dashboard/header/Header";
 import Contacts from "../components/dashboard/contacts/Contacts";
 import WithContext from "../components/context";
@@ -39,7 +39,7 @@ export default function Dashboard() {
   // replaces a contact from state, with its updated version
   const handleUpdateContacts = (updatedContact) => {
     const updatedUserContacts = userContacts.map((contact) => {
-      if (contact._id === updatedContact.contactId) return updatedContact;
+      if (contact._id === updatedContact._id) return updatedContact;
       else return contact;
     });
 
@@ -47,10 +47,10 @@ export default function Dashboard() {
   };
 
   // removes a contact from state
-  const handleDeleteContacts = (contactId) => {
+  const handleDeleteContacts = (_id) => {
     setUserContacts(
       userContacts.filter((contact) => {
-        return contact._id !== contactId;
+        return contact._id !== _id;
       })
     );
   };

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
-// Components
+// Custom Components
 import SignUp from "./Forms/SignUp";
 import SignIn from "./Forms/SignIn";
-import PasswordRecovery from "./Forms/PasswordRecovery"
-import withContext from "../context"
+import PasswordRecovery from "./Forms/PasswordRecovery";
+import withContext from "../context";
 
 // wraps signIn & signUp components in HOC containing global app state/functions
 const SignInWithContext = withContext(SignIn);
@@ -15,30 +15,32 @@ export default function HomeCard() {
   const [viewForm, toggleView] = useState(true);
   const [viewRecovery, toggleRecovery] = useState(false);
 
-
   // updates viewForm state
-  const handleFormType = () => {
+  const handleStandardForms = () => {
     toggleView(!viewForm);
   };
 
-  const handlePasswordRecovery = () => {
-    toggleRecovery(!viewRecovery)
-    toggleView(true)
-  }
+  const handleRecoveryForm = () => {
+    toggleRecovery(!viewRecovery);
+    toggleView(true);
+  };
 
   // toggles between signUp or signIn forms
   const getFormType = () => {
     if (viewRecovery)
-      return <PasswordRecovery handlePasswordRecovery={handlePasswordRecovery} />
-    else if (viewForm && !viewRecovery)
-      return <SignInWithContext handleFormType={handleFormType} handlePasswordRecovery={handlePasswordRecovery} />
-    else if (!viewForm && !viewRecovery)
-      return <SignUpWithContext handleFormType={handleFormType} />
-  }
+      return <PasswordRecovery handleRecoveryForm={handleRecoveryForm} />;
 
-  return (
-    <div>
-      {getFormType()}
-    </div>
-  );
+    else if (viewForm && !viewRecovery)
+      return (
+        <SignInWithContext
+          handleStandardForms={handleStandardForms}
+          handleRecoveryForm={handleRecoveryForm}
+        />
+      );
+    
+    else if (!viewForm && !viewRecovery)
+      return <SignUpWithContext handleStandardForms={handleStandardForms} />;
+  };
+
+  return <div>{getFormType()}</div>;
 }

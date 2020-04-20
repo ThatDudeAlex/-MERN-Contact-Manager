@@ -22,10 +22,10 @@ export async function editContact(updatedContact) {
 
 
 // Completely deletes all contact info 
-export async function deleteContact(contactId) {
+export async function deleteContact(_id) {
   const response = await axios
       .delete("http://localhost:5000/api/contacts/deleteContact", 
-      {data: { contactId }}, { withCredentials: true })
+      {data: { _id }}, { withCredentials: true })
   
   return response.data
 }

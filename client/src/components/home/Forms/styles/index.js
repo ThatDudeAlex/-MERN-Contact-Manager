@@ -17,8 +17,15 @@ export const useStyles = makeStyles((theme) => ({
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
-
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  linkButton: {
+    fontSize: '.9rem',
+    textTransform: 'none',
+    '&:hover' : {
+      textDecoration: 'underline',
+      background: 'none',
+    },
+  }
 }));

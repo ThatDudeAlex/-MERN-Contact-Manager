@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 
-// Components
+// Custom Components
 import {verifyUserAuth} from '../../apis/usersApi'
 
 // App global Context 

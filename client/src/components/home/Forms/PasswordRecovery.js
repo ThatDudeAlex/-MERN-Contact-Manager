@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-// Material-UI
+// Material-UI Components
 import {
   Avatar,
   Button,
@@ -13,10 +13,10 @@ import {
   Collapse,
 } from "@material-ui/core";
 
-// Icons
+// Material-UI Icons
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 
-// Components
+// Custom Components
 import Copyright from "./Copyright";
 
 // API calls
@@ -33,23 +33,24 @@ import { useForm } from "../../hooks/useForm";
 import { useStyles } from "./styles";
 
 // User password recovery form
-export default function PasswordRecovery({ handlePasswordRecovery }) {
+export default function PasswordRecovery({ handleRecoveryForm }) {
   const classes = useStyles();
 
-  // Initial form value states
+  // Initial form values state
   const [formValues, setFormValues] = useForm({
     email: "",
     token: "",
     password: "",
     confirmPassword: "",
   });
+
   // Initial form visibility states
   const [showInputs, setVisibility] = useState({
     email: true,
     token: false,
     password: false,
   });
-  // Initial Error States
+  // Initial Error Message States
   const [errorMsgs, setErrMessages] = useState({
     email: "",
     token: "",
@@ -77,18 +78,22 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
 
   // Sets email related errors
   const handleEmailErr = (err) => {
-    setErrMessages({...errorMsgs, email: err})
-  }
+    setErrMessages({ ...errorMsgs, email: err });
+  };
 
   // Sets token related errors
   const handleTokenErr = (err) => {
-    setErrMessages({...errorMsgs, token: err})
-  }
+    setErrMessages({ ...errorMsgs, token: err });
+  };
 
   // Sets password & confirm password errors
   const handlePasswordErr = (err) => {
-    setErrMessages({...errorMsgs, password: err.password, confirmPassword: err.confirmPassword})
-  }
+    setErrMessages({
+      ...errorMsgs,
+      password: err.password,
+      confirmPassword: err.confirmPassword,
+    });
+  };
 
   // Receives user email input
   const onSubmitEmail = async (event) => {
@@ -116,7 +121,7 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
     const response = await recoverPassword(formValues, handlePasswordErr);
     if (response) {
       alert("Your password has been updated");
-      handlePasswordRecovery();
+      handleRecoveryForm();
     }
   };
 
@@ -131,13 +136,15 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
+
         <Typography component="h1" variant="h5">
           Password Recovery
         </Typography>
 
-        <form className={classes.form} onSubmit={onSubmitPassword} noValidate>
-          {/* Users Email Input */}
-          <Collapse in={showInputs.email}>
+        {/* Recovery Email Form */}
+        <Collapse in={showInputs.email} className={classes.form}>
+          <form onSubmit={onSubmitEmail} noValidate>
+            {/* Email Input */}
             <TextField
               variant="outlined"
               margin="normal"
@@ -151,21 +158,25 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
               autoComplete="email"
               onChange={setFormValues}
               autoFocus
-            />
+            />  
 
+            {/* Submit Button */}
             <Button
               fullWidth
-              onClick={onSubmitEmail}
+              type="submit"
               variant="contained"
               color="primary"
               className={classes.submit}
             >
               Search
             </Button>
-          </Collapse>
+          </form>
+        </Collapse>
 
-          {/* Users Recovery Token Input */}
-          <Collapse in={showInputs.token}>
+        {/* Recovery Token Form */}
+        <Collapse in={showInputs.token} className={classes.form}>
+          <form onSubmit={onSubmitToken} noValidate>
+            {/* Token Input */}
             <TextField
               variant="outlined"
               margin="normal"
@@ -180,8 +191,9 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
               autoFocus
             />
 
+            {/* Submit Button */}
             <Button
-              onClick={onSubmitToken}
+              type="submit"
               fullWidth
               variant="contained"
               color="primary"
@@ -189,10 +201,13 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
             >
               Submit
             </Button>
-          </Collapse>
+          </form>
+        </Collapse>
 
-          {/* Users New Password Input */}
-          <Collapse in={showInputs.password}>
+        {/* Change Password Form */}
+        <Collapse in={showInputs.password} className={classes.form}>
+          <form onSubmit={onSubmitPassword} noValidate>
+            {/* Password Input */}
             <TextField
               variant="outlined"
               margin="normal"
@@ -208,6 +223,7 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
               autoFocus
             />
 
+            {/* Confirm Password Input */}
             <TextField
               variant="outlined"
               margin="normal"
@@ -223,8 +239,9 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
               autoFocus
             />
 
+            {/* Submit Button */}
             <Button
-              onClick={onSubmitPassword}
+              type="submit"
               fullWidth
               variant="contained"
               color="primary"
@@ -232,19 +249,14 @@ export default function PasswordRecovery({ handlePasswordRecovery }) {
             >
               Update Password
             </Button>
-          </Collapse>
-
-          {/* Returns to login form */}
-          <Link href="#" variant="body2" onClick={handlePasswordRecovery}>
-            return to sign in form
-          </Link>
-        </form>
+          </form>
+        </Collapse>
       </div>
 
-      {/* Copyright */}
-      <Box mt={8}>
-        <Copyright />
-      </Box>
+      {/* Toggle SignIn form */}
+      <Button color="primary" className={classes.linkButton} onClick={handleRecoveryForm}>
+        Return to SignIn
+      </Button>
     </Container>
   );
 }

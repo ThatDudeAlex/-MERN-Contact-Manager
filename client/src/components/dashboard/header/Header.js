@@ -11,14 +11,12 @@ import {
   Button,
 } from "@material-ui/core";
 
-// Icons
+// Material-UI Icons
 import { AccountCircle } from "@material-ui/icons";
 
 // Styles
 import { useStyles } from "./styles/";
 
-// Components
-// import Modal from "../modal/Modal";
 
 // Dashboard header containing search bar & add/logout buttons
 export default function Header({ context }) {

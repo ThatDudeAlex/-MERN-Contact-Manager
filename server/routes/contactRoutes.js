@@ -71,19 +71,19 @@ router.post("/addContact", asyncHandler(async(req, res) => {
  * @access	public
  */
 router.delete("/deleteContact", asyncHandler(async(req, res) => {
-    const contactId = req.body.contactId;
+    const _id = req.body._id;
 
     // checks if user id is provided
-    if (!contactId) return res.json({success: false, msg: "no contact id found"});
+    if (!_id) return res.json({success: false, msg: "no contact id found"});
 
     // deletes contact from DB and returns it
-    const deletedContact = await Contact.findOneAndDelete({ _id: contactId })
+    const deletedContact = await Contact.findOneAndDelete({ _id: _id })
 
     if (deletedContact)
       return res.json({
         msg: "contact deleted",
         success: true,
-        contactId: contactId,
+        _id: _id,
       });
   })
 );
@@ -95,22 +95,22 @@ router.delete("/deleteContact", asyncHandler(async(req, res) => {
  * @access	public
  */
 router.patch("/editContact", asyncHandler(async(req, res) => {
-    const { contactId, name, email, phoneNumber } = req.body;
+    const { _id, name, email, phoneNumber } = req.body;
 
     // checks if contact info is provided
-    if (!req.body.contactId)
+    if (!req.body._id)
       return res.json({ success: false, msg: "invalid contact id" });
     if (!name) return res.json({ success: false, msg: "no name" });
     if (!email && !phoneNumber)
       return res.json({ success: false, msg: "no email or phone number" });
 
     // finds contact in DB
-    contact = await Contact.findById(contactId)
+    contact = await Contact.findById(_id)
 
     // updates contact with the new info
-    contact.name = name;
-    contact.email = email;
-    contact.phoneNumber = phoneNumber;
+    // contact.name = name;
+    // contact.email = email;
+    // contact.phoneNumber = phoneNumber;
     
     contact.updateOne({ name, email, phoneNumber }, (err) => {
       if (err) 

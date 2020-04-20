@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 
-// Components
+// Custom Components
 import { Consumer } from "../components/context";
 
 // Routes that requires a logged in user to display
