@@ -102,33 +102,20 @@ export default function Contacts({ userContacts, handleAddContacts, ...props }) 
       <Grid container direction="row">
         {/* Iterates user contacts array and creates a card for each one */}
         {visibleContacts.map((contact) => {
-          const { name, email, phoneNumber, _id } = contact;
-          {/* console.log(contact) */}
-          const contactInfo = {
-            name,
-            email,
-            phone: phoneNumber,
-            _id: _id,
-            ...props,
-          };
-
+          
           return (
             <Grow in={contactsLoaded} key={contact._id} 
               style={{ transformOrigin: '0 0 0' }}
               {...(contactsLoaded ? { timeout: 1000 } : {})}
             >
               <Grid item xs={12} md={6} lg={4} xl={3}>
-                <InfoCard {...contactInfo} />
+                <InfoCard {...contact} {...props} />
               </Grid>
             </Grow>
           );
         })}
       </Grid>
 
-        {/* <Divider variant="middle" />
-      <Grid container justify="center">
-        <Typography variant="h4"> {`Number of Contacts: `} </Typography>
-      </Grid> */}
     </Container>
   );
 }

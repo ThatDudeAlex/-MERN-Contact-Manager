@@ -6,8 +6,6 @@ import {
   Button,
   CssBaseline,
   TextField,
-  Link,
-  Box,
   Typography,
   Container,
   Collapse,
@@ -15,9 +13,6 @@ import {
 
 // Material-UI Icons
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-
-// Custom Components
-import Copyright from "./Copyright";
 
 // API calls
 import {

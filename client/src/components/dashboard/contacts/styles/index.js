@@ -75,4 +75,9 @@ export const useStyles = makeStyles((theme) => ({
   cardIcon: {
     color: "black",
   },
+
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
 }));

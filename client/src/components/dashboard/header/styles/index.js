@@ -22,21 +22,9 @@ export const useStyles = makeStyles(theme => ({
     color: "black",
   },
   logoutBtn: {
-    "& hover": {
-      color: "#268745"
+    "&:hover": {
+      textDecoration: "underline"
     }
   },
 
-  addBtn: {
-    fontWeight: '700',
-    color: "white",
-    border: "1px solid white",
-    backgroundColor: "#268745",
-    
-    "&:hover": {
-      color: "#268745",
-      border: "1px solid #268745",
-      backgroundColor: 'white'
-    },
-  },
 }));

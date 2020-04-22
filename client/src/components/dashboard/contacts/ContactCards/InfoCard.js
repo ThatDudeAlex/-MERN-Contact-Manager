@@ -35,8 +35,9 @@ export default function Cards(props) {
   const classes = useStyles();
   const [modal, setModal] = useState(false);
 
-  const { name, phone, email, _id, handleDeleteContacts } = props;
-  // console.log(_id)
+  const { name, phoneNumber, email, _id, handleDeleteContacts } = props;
+
+
   const handleModal = () => {
     setModal(!modal);
   };
@@ -57,18 +58,8 @@ export default function Cards(props) {
 
   return (
     <Card className={classes.card}>
-      <ModalCard
-        {...editModalProps}
-        // modalState={modal}
-        // handleModal={handleModal}
-        // editModal
-        // _id={_id}
-        // name={name}
-        // email={email}
-        // phone={phone}
-        // handleDeleteContacts={handleDeleteContacts}
-        // handleUpdateContacts={handleUpdateContacts}
-      />
+      <ModalCard {...editModalProps} />
+
       {/* Card Header  */}
       <List>
         <ListItem className={classes.cardHeaderItem}>
@@ -97,7 +88,7 @@ export default function Cards(props) {
               <PhoneIphone className={classes.cardIcon} />
             </ListItemIcon>
 
-            <ListItemText>{phone}</ListItemText>
+            <ListItemText>{phoneNumber}</ListItemText>
           </ListItem>
 
           {/* Email */}

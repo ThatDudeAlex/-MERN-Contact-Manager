@@ -2,22 +2,31 @@
 import axios from "axios";
 
 // Creates a new contact for the user
-export async function addContact(newContact) {
+export async function addContact(newContact, setErrors) {
   const response = await axios
       .post("http://localhost:5000/api/contacts/addContact", newContact, 
       {withCredentials: true})
+      .then(res => res.data)
+      .catch(error => {
+        if(error.response) setErrors(error.response.data)
+      })
 
-  return response.data
+  return response
 }
 
 
 // Changes info from an existing contact
-export async function editContact(updatedContact) {
+export async function editContact(updatedContact, setErrors) {
   const response = await axios
       .patch("http://localhost:5000/api/contacts/editContact", updatedContact,
       {withCredentials: true})
+      .then(res => res.data)
+      .catch(error => {
+        console.log(error.response.data)
+        if(error.response) setErrors(error.response.data)
+      })
 
-  return response.data
+  return response
 }
 
 

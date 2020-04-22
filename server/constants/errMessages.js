@@ -7,7 +7,7 @@ module.exports = {
     missingLastName: "Last Name Required",
     missingToken: "Recovery Token Required",
     missingContactName: "Contact Name Required",
-    missingContactInfo: "Contact Email Or Phone Number Required",
+    missingContactInfo: "Email Or Phone Number Required",
 
     // Incorrect inputs 
     incorrectEmail: "Invalid Email",
