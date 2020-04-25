@@ -12,19 +12,33 @@ export const useStyles = makeStyles(theme => ({
       "0px 2px 4px -1px rgba(0,0,0,0.5), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)",
   },
 
-  headerItems: {
-    // margin: "10px",
-    color: "white !important",
+  headerName: {
+    marginLeft: "3px",
+    paddingRight: "10px",
+    borderRight: "solid white 1px"
   },
 
-  searchBar: {
-    backgroundColor: "white",
-    color: "black",
+  headerItem: {
+    color: "white",
   },
+
   logoutBtn: {
     "&:hover": {
       textDecoration: "underline"
     }
   },
+
+  // media queries
+  '@media (max-width: 991px)': {
+    headerContainer: {
+      justifyContent: "center"
+    }
+  },
+
+  '@media (min-width: 992px)': {
+    headerContainer: {
+      justifyContent: "flex-end"
+    }
+  }
 
 }));

@@ -35,21 +35,16 @@ export default function Header({ context }) {
     <Container maxWidth={false} className={classes.header}>
       <Container>
         {/* contacts banner */}
-        <Grid container justify="flex-end" alignItems="center">
+        <Grid className={classes.headerContainer} container alignItems="center">
           {/* User Icon */}
-          <Grid item className={classes.headerItems}>
+          <Grid item className={classes.headerItem}>
             <AccountCircle fontSize="large" />
           </Grid>
 
           {/* Users Name */}
           <Grid
             item
-            className={classes.headerItems}
-            style={{
-              marginLeft: "3px",
-              paddingRight: "10px",
-              borderRight: "solid white 1px",
-            }}
+            className={`${classes.headerName} ${classes.headerItem}`}
           >
             <Typography variant="button"> {context.isAuthenticated} </Typography>
           </Grid>

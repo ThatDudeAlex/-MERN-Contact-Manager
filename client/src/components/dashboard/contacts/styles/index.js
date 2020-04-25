@@ -97,4 +97,28 @@ export const useStyles = makeStyles((theme) => ({
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
+
+  // query
+  '@media (max-width: 768px)':{
+    searchBarContainer:{
+      paddingTop: "15%",
+      marginBottom:"2.5%"
+    }
+  },
+  '@media (min-width: 768px)':{
+    searchBarContainer:{
+      paddingTop: "6%",
+      marginBottom:"2.5%"
+    }
+  },
+  '@media (min-width: 992px)':{
+    searchBarContainer:{
+      paddingTop: "4%",
+    }
+  },
+  '@media (min-width: 1200px)':{
+    searchBarContainer:{
+      paddingTop: "2.5%",
+    }
+  }
 }));

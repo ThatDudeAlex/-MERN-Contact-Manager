@@ -64,9 +64,9 @@ export default function Contacts({ userContacts, handleAddContacts, ...props }) 
         addCard
       />
 
-      <Grid container justify="center" alignContent="center">
+      <Grid container className={classes.searchBarContainer} justify="center" alignContent="center">
         {/* Search Bar */}
-        <Grid item className={classes.searchBarContainer}>
+        <Grid item>
           <TextField
             placeholder="Search Contacts"
             variant="outlined"
