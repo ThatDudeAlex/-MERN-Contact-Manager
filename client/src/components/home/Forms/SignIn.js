@@ -42,7 +42,7 @@ export default function SignIn({
   // Initial state
   const [formValues, setFormValues] = useForm({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
-  const [errorMsgs, setErrMsgs] = useState({ email: "", password: "" });
+  const [errorMsgs, setErrMsgs] = useState({});
 
   // executes when form is submitted
   const onSubmitLogin = async (event) => {
@@ -66,7 +66,7 @@ export default function SignIn({
 
   // Controls error messages state
   const handleErrState = (state) => {
-    setErrMsgs(state);
+    setErrMsgs(state.errors)
   };
 
   return (
@@ -94,7 +94,7 @@ export default function SignIn({
             margin="normal"
             required
             fullWidth
-            error={errorMsgs.email.length === 0 ? false : true}
+            error={errorMsgs.email ? true : false}
             helperText={errorMsgs.email}
             id="email"
             label="Email Address"
@@ -110,7 +110,7 @@ export default function SignIn({
             margin="normal"
             required
             fullWidth
-            error={errorMsgs.password.length === 0 ? false : true}
+            error={errorMsgs.password ? true : false}
             helperText={errorMsgs.password}
             name="password"
             label="Password"

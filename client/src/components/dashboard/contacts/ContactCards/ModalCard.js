@@ -22,7 +22,7 @@ export default function ModalCard({handleAddContacts, handleUpdateContacts, moda
   };
 
   return (
-    <Container className={classes.modalContainer}>
+    <Container>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -37,7 +37,9 @@ export default function ModalCard({handleAddContacts, handleUpdateContacts, moda
         }}
       >
         <Fade in={modalState}>
-          <span style={{border:'none'}}>{getCard()}</span>
+          <span className={classes.modalCardWrapper}>
+            {getCard()}
+          </span>
         </Fade>
       </Modal>
     </Container>

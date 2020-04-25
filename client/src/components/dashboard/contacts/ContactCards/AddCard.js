@@ -39,11 +39,7 @@ export default function Cards({ handleAddContacts, handleModal }) {
   const classes = useStyles();
 
   // const [contactPicture, setContactPicture] = useState();
-  const [errorMsgs, setErrMsgs] = useState({
-    name: "",
-    email: "",
-    phoneNumber: "",
-  });
+  const [errorMsgs, setErrMsgs] = useState({});
 
   const [contactInfo, setContactInfo] = useForm({
     name: "",
@@ -58,7 +54,7 @@ export default function Cards({ handleAddContacts, handleModal }) {
 
   // Controls error messages state
   const handleErrState = (state) => {
-    setErrMsgs(state);
+    setErrMsgs(state.errors)
   };
 
   // const handleImgSelection = (event) => {
@@ -85,7 +81,7 @@ export default function Cards({ handleAddContacts, handleModal }) {
   };
 
   return (
-    <Card className={classes.card}>
+    <Card className={`${classes.card} ${classes.modalCard}`}>
       <form onSubmit={onSubmitAdd} noValidate>
         {/* Card Header  */}
         <List>
@@ -126,7 +122,7 @@ export default function Cards({ handleAddContacts, handleModal }) {
         </List>
 
         {/* Card Body */}
-        <CardContent>
+        <CardContent className={errorMsgs.email ? classes.cardContentError : null}>
           <List>
             <ListItem>
               <ListItemIcon>
@@ -137,7 +133,7 @@ export default function Cards({ handleAddContacts, handleModal }) {
               <ListItemText>
                 <TextField
                   name="name"
-                  error={errorMsgs.name.length === 0 ? false : true}
+                  error={errorMsgs.name ? true : false}
                   helperText={errorMsgs.name}
                   onChange={setContactInfo}
                   required
@@ -156,7 +152,7 @@ export default function Cards({ handleAddContacts, handleModal }) {
               <ListItemText>
                 <TextField
                   name="phoneNumber"
-                  error={errorMsgs.phoneNumber.length === 0 ? false : true}
+                  error={errorMsgs.phoneNumber ? true : false}
                   helperText={errorMsgs.phoneNumber}
                   onChange={setContactInfo}
                   type="tel"
@@ -175,7 +171,7 @@ export default function Cards({ handleAddContacts, handleModal }) {
               <ListItemText>
                 <TextField
                   name="email"
-                  error={errorMsgs.email.length === 0 ? false : true}
+                  error={errorMsgs.email ? true : false}
                   helperText={errorMsgs.email}
                   onChange={setContactInfo}
                   label="Email"

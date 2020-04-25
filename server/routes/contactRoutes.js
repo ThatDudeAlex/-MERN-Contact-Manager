@@ -4,6 +4,9 @@ const router = express.Router();
 // schemas
 const Contact = require("../database/models/Contact");
 
+const {isAuthenticated} = require("./helper/auth")
+const { validate, userContactsRules } = require('./helper/validator')
+
 // Error Messages
 const constErrMessage = require("../constants/errMessages")
 
@@ -26,11 +29,8 @@ const asyncHandler = (incomingFunction) => {
  * @desc	gets all contacts for a given user
  * @access	public
  */
-router.get("/getAllContacts", asyncHandler(async (req, res) => {
+router.get("/getAllContacts", isAuthenticated, asyncHandler(async (req, res) => {
     const { userId } = req.session;
-
-    // checks if user id is provided
-    if (!userId) return res.json({ success: false, msg: "no user" });
 
     // querys DB for all contacts belonging to the user
     const contacts = await Contact.find({ userId: userId })
@@ -44,25 +44,10 @@ router.get("/getAllContacts", asyncHandler(async (req, res) => {
  * @desc	creates a new contact
  * @access	public
  */
-router.post("/addContact", asyncHandler(async(req, res) => {
+router.post("/addContact", isAuthenticated, userContactsRules(), validate,
+asyncHandler(async(req, res) => {
     const { name, email, phoneNumber } = req.body;
     const { userId } = req.session;
-
-    const errors = {name: "", email: "", phoneNumber: ""}
-
-    if (!name) errors.name = constErrMessage.missingContactName
-    if (!email && !phoneNumber) {
-      errors.email = constErrMessage.missingContactInfo
-      errors.phoneNumber = constErrMessage.missingContactInfo
-    }
-
-    console.log('hoooo')
-
-    if(!name && (!email && !phoneNumber))
-      return res.status(400).send(errors)
-
-    // checks if user id is provided
-    if (!userId) return res.status(401).send("Invalid User ID" );
 
     // create new contact object, to save into DB
     const newContact = new Contact(
@@ -80,21 +65,15 @@ router.post("/addContact", asyncHandler(async(req, res) => {
  * @desc	deletes selected contact
  * @access	public
  */
-router.delete("/deleteContact", asyncHandler(async(req, res) => {
-    const _id = req.body._id;
-
+router.delete("/deleteContact/:_id", isAuthenticated, asyncHandler(async(req, res) => {
+    const _id = req.params._id;
+    
     // checks if user id is provided
-    if (!_id) return res.json({success: false, msg: "no contact id found"});
+    if (!_id) return res.status(500).json(constErrMessage.serverErr);
 
     // deletes contact from DB and returns it
-    const deletedContact = await Contact.findOneAndDelete({ _id: _id })
-
-    if (deletedContact)
-      return res.json({
-        msg: "contact deleted",
-        success: true,
-        _id: _id,
-      });
+    const deletedContact = await Contact.findOneAndDelete({_id})
+    if (deletedContact) return res.end()
   })
 );
 
@@ -104,34 +83,19 @@ router.delete("/deleteContact", asyncHandler(async(req, res) => {
  * @desc	edits selected contact
  * @access	public
  */
-router.patch("/editContact", asyncHandler(async(req, res) => {
+router.patch("/editContact", isAuthenticated, userContactsRules(), validate, asyncHandler(async(req, res) => {
     const { _id, name, email, phoneNumber } = req.body;
 
-    const errors = {name: "", email: "", phoneNumber: ""}
-
     // Checks if contact _id is invalid
-    if (!_id) return res.status(404).send("invalid contact id");
-
-    // Sets errors for any missing info
-    if (!name) errors.name = constErrMessage.missingContactName
-    if (!email && !phoneNumber){
-      errors.email = constErrMessage.missingContactInfo
-      errors.phoneNumber = constErrMessage.missingContactInfo
-    }
-    
-    // Returns missing info errors
-    if(!name || (!email && !phoneNumber))
-      return res.status(400).send(errors)
+    if (!_id) return res.status(500).send({msg: constErrMessage.serverErr});
 
     // finds contact in DB
     contact = await Contact.findById(_id)
 
     // Updated contact info
     contact.updateOne({ name, email, phoneNumber }, (err) => {
-      if (err) 
-        return res.status(500).send("Error occurred while updating contact info");
-      else
-        return res.send("Contact Updated");
+      if (err) return res.status(500).send({msg: constErrMessage.serverErr});
+      else return res.send("Contact Updated");
     });
   })
 );

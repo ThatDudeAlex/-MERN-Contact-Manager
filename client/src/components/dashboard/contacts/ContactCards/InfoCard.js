@@ -34,19 +34,15 @@ import { deleteContact } from "../../../../apis/contactsApi";
 export default function Cards(props) {
   const classes = useStyles();
   const [modal, setModal] = useState(false);
-
   const { name, phoneNumber, email, _id, handleDeleteContacts } = props;
-
 
   const handleModal = () => {
     setModal(!modal);
   };
 
   const onSubmitDelete = async () => {
-    // API call to delete contact
-    const contactDeleted = await deleteContact(_id).then((res) => res);
-
-    if (contactDeleted) handleDeleteContacts(_id);
+    handleDeleteContacts(_id);
+    await deleteContact(_id); // API call to delete contact
   };
 
   const editModalProps = {
@@ -57,7 +53,7 @@ export default function Cards(props) {
   };
 
   return (
-    <Card className={classes.card}>
+    <Card className={`${classes.card} ${classes.infoCard}`}>
       <ModalCard {...editModalProps} />
 
       {/* Card Header  */}

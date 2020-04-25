@@ -2,11 +2,19 @@ const express = require("express");
 const crypto = require("crypto") 
 const router = express.Router();
 
-// Error Messages
-const constErrMessage = require("../constants/errMessages")
-
 // email module
 const recoveryMail = require("../mail/transporter")
+// Error Messages
+const constErrMessage = require("../constants/errMessages")
+// Validator
+const { 
+  validate, 
+  userLoginRules, 
+  userRegisterRules,
+  passwordRecEmailRules,
+  recoveryTokenRules,
+  recoveryUpdateRules
+} = require('./helper/validator')
 
 // allowes router to parse json data
 router.use(express.json());
@@ -30,33 +38,9 @@ const asyncHandler = (incomingFunction) => {
  * @desc	Registers user
  * @access	public
  */
-router.post(
-  "/register",
-  asyncHandler(async (req, res) => {
+router.post("/register", userRegisterRules(), validate, asyncHandler(async(req, res) => {
     const email = req.body.email.toLowerCase();
-    const { firstName, lastName, password, confirmPassword } = req.body;
-
-    // stores all error messages to return
-    const errors = {firstName: "", lastName: "", password: "", confirmPassword: "", email: ""};
-
-    // sets errors for any info that is missing
-    if (!firstName) errors.firstName = constErrMessage.missingFirstName
-    if (!lastName) errors.lastName = constErrMessage.missingLastName
-    if (!email) errors.email = constErrMessage.missingEmail
-    if (!password) errors.password = constErrMessage.missingPassword
-    if (!confirmPassword) errors.confirmPassword = constErrMessage.missingPassConfirm
-
-    // returns errors if any information is missing
-    if(!firstName || !lastName || !email || !password || !confirmPassword) 
-      return res.status(400).send(errors);
-
-    // verifies that passwords match
-    if (password !== confirmPassword)
-      return res.status(404).send({...errors, confirmPassword: constErrMessage.noMatch});
-
-    // searches DB for email, & returns if it finds one
-    const user = await User.findOne({ email });
-    if (user) return res.status(409).send({ ...errors, email: constErrMessage.takenEmail });
+    const { firstName, lastName, password } = req.body;
 
     // create a new user object and hashes password
     const newUser = new User({ firstName, lastName, email });
@@ -73,42 +57,19 @@ router.post(
  * @desc	logs in a user
  * @access	public
  */
-router.post(
-  "/login",
-  asyncHandler(async (req, res) => {
+router.post("/login", userLoginRules(), validate, asyncHandler(async(req, res) => {
     const email = req.body.email.toLowerCase();
-    const { password, rememberMe } = req.body;
-
-    // stores all error messages to return
-    const errors = {email: "", password: ""};
-
-    // sets errors if email or password are missing
-    if (!email) errors.email = constErrMessage.missingEmail
-    if (!password) errors.password = constErrMessage.missingPassword
-
-    // returns errors if email or password are missing
-    if(!email || !password)
-      return res.status(400).send(errors);
+    const { rememberMe } = req.body;
     
-    // searches DB for email, & returns if doesn't finds one
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).send({...errors, email: constErrMessage.incorrectEmail});
+    const user = await User.findOne({ email }); // searches DB for user email
+    const usersName = `${user.firstName} ${user.lastName}` // formats name to display in header
 
-    // checks if the password entered matches the user password
-    const correctPassword = user.validPassword(password, user.password);
-    if (!correctPassword)
-      return res.status(401).send({...errors, password: constErrMessage.incorrectPassword});
-
-    // formats users name to display in header
-    const usersName = `${user.firstName} ${user.lastName}`
-
-    // stores userId into session and sets cookie in brower
+    // stores userId & name into session and sets cookie in brower
     req.session.userId = user._id;
-    req.session.usersName = usersName
+    req.session.usersName = usersName;
 
-    // if remember is checked, set session to expire in 5yrs ( in milli seconds )
-    // else set it to expire in 1 hour
-    // yrs * days * hrs * mins * secs * milliSecs
+    // Set session to expire in 5yrs ( in milli seconds ) else set it to expire in 1 hour
+    // format: yrs * days * hrs * mins * secs * milliSecs
     if(rememberMe) req.session.cookie.maxAge =  5 * 365 * 24 * 60 * 60 * 1000;
     else req.session.cookie.maxAge = 60 * 60 * 1000
 
@@ -117,18 +78,13 @@ router.post(
 );
 
 /**
- * @route	get  users/isAuthenticated
- * @desc	verifies if user is authenticated
+ * @route	get  users/getAuthenticatedUser
+ * @desc	returns user if they're authenticated
  * @access	public
  */
-router.get(
-  "/isAuthenticated",
-  asyncHandler((req, res) => {
-    if (req.session.userId){
-      const usersName = req.session.usersName
-      return res.send(usersName);
-    }
-    else return res.status(401).send("user not authenticated");
+router.get("/getAuthenticatedUser", asyncHandler((req, res) => {
+    if(req.session.userId) return res.send(req.session.usersName)
+    res.end()
   })
 );
 
@@ -157,25 +113,21 @@ router.get("/logout", asyncHandler((req, res) => {
  * @desc	Sends a password recovery token to the users email
  * @access	public
  */
-router.post("/passwordRecoveryEmail", asyncHandler(async(req, res) => {
+router.post("/passwordRecoveryEmail", passwordRecEmailRules(), validate, asyncHandler(async(req, res) => {
   const {email} = req.body
-
-  // check if email is missing
-  if (!email) return res.status(400).send( constErrMessage.missingEmail );
 
   // searches DB for email, & returns if doesn't finds one
   const user = await User.findOne({ email });
-  if (!user) return res.status(404).send(constErrMessage.incorrectEmail );
-
-  // generate recovery token
-  const token = crypto.randomBytes(4).toString('hex')
+  const token = crypto.randomBytes(4).toString('hex')  // generate recovery token
 
   // assigns recovery token to the user & set to expire in 1 hr 
-  await user.updateOne({"passwordRecovery.token":token, "passwordRecovery.expires":Date.now() + (60 * 60 * 1000)})
+  await user.updateOne(
+    {"passwordRecovery.token": token, "passwordRecovery.expires": Date.now() + (60 * 60 * 1000)}
+  )
   
   // send email to user
   recoveryMail(email, token)
-  return res.json("sent recovery email");
+  return res.send("sent recovery email");
 }))
 
 
@@ -184,23 +136,15 @@ router.post("/passwordRecoveryEmail", asyncHandler(async(req, res) => {
  * @desc	Verifies if user entered the correct token
  * @access	public
  */
-router.post("/verifyRecoveryToken", asyncHandler(async(req, res) => {
-  const {token, email} = req.body
-  
-  // check if token or email is missing
-  if (!email) return res.status(400).send(constErrMessage.missingEmail);
-  if (!token) return res.status(400).send(constErrMessage.missingToken);
+router.post("/verifyRecoveryToken", recoveryTokenRules(), validate,
+asyncHandler(async(req, res) => {
+  const {token} = req.body
 
   // searches DB for email, & returns if doesn't finds one
-  const user = await User.findOne({ email });
-  if (!user) return res.status(404).send(constErrMessage.incorrectEmail);
-
-  // compare user input with recovery token
-  if (token !== user.passwordRecovery.token) return res.status(400).send(constErrMessage.incorrectToken)
+  const user = await User.findOne({ "passwordRecovery.token": token });
   
   // verifies if token is expired, and remove token if it is
   if (Date.now() > user.passwordRecovery.expires){
-
     await user.update({"passwordRecovery.token": "", "passwordRecovery.expires": null})
     return res.status(401).send(constErrMessage.expiredToken)
   }
@@ -214,25 +158,11 @@ router.post("/verifyRecoveryToken", asyncHandler(async(req, res) => {
  * @desc	Updates users account with new password
  * @access	public
  */
-router.put("/recoverPassword", asyncHandler(async(req, res) => {
-  const {password, confirmPassword, email} = req.body
-  const errors = { password: "", confirmPassword: "" }
-
-  // check if any required info is missing
-  if (!email) errors.email = constErrMessage.missingEmail
-  if (!password)  errors.password = constErrMessage.missingPassword
-  if (!confirmPassword) errors.confirmPassword = constErrMessage.missingPassConfirm
-
-  if(!email || !password || !confirmPassword)
-    return res.status(400).send(errors)
-
-  // verifies that passwords match 
-  if (password !== confirmPassword) return res.status(400).send({...errors, confirmPassword: constErrMessage.noMatch});
+router.put("/recoverPassword", recoveryUpdateRules(), validate, asyncHandler(async(req, res) => {
+  const {password, email} = req.body
 
   // searches DB for email, & returns if doesn't finds one
   const user = await User.findOne({ email });
-  if (!user) return res.status(404).send({...errors, email: constErrMessage.incorrectEmail});
-
   // updates account with the new password
   await user.updateOne({ password: user.generateHash(password) })
 

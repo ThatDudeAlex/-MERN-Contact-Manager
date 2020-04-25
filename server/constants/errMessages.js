@@ -15,5 +15,11 @@ module.exports = {
     incorrectToken: "Invalid Recovery Token",
     expiredToken: "Expired Recovery Token",
     noMatch: "Passwords Do Not Match",
-    takenEmail: "A User With This Email Already Exist"
+    passwordLen: "Must be at least 4 characters long",
+    passwordAlphaNumeric: "",
+    takenEmail: "A User With This Email Already Exist",
+    nonExistingEmail: "No Account Exist With This Email",
+
+    // 
+    serverErr: "Server Error Occurred",
 }

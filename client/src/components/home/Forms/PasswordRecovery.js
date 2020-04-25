@@ -46,12 +46,7 @@ export default function PasswordRecovery({ handleRecoveryForm }) {
     password: false,
   });
   // Initial Error Message States
-  const [errorMsgs, setErrMessages] = useState({
-    email: "",
-    token: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [errorMsgs, setErrMessages] = useState({});
 
   // Hides email form & displays token form
   const handletokenVisibility = () => {
@@ -71,31 +66,16 @@ export default function PasswordRecovery({ handleRecoveryForm }) {
     });
   };
 
-  // Sets email related errors
-  const handleEmailErr = (err) => {
-    setErrMessages({ ...errorMsgs, email: err });
-  };
-
-  // Sets token related errors
-  const handleTokenErr = (err) => {
-    setErrMessages({ ...errorMsgs, token: err });
-  };
-
-  // Sets password & confirm password errors
-  const handlePasswordErr = (err) => {
-    setErrMessages({
-      ...errorMsgs,
-      password: err.password,
-      confirmPassword: err.confirmPassword,
-    });
-  };
+  const handleErr = (state) => {
+    setErrMessages(state.errors)
+  }
 
   // Receives user email input
   const onSubmitEmail = async (event) => {
     event.preventDefault();
 
     // Api call
-    const success = await passwordRecoveryEmail(formValues, handleEmailErr);
+    const success = await passwordRecoveryEmail(formValues, handleErr);
     if (success) handletokenVisibility();
   };
 
@@ -104,7 +84,7 @@ export default function PasswordRecovery({ handleRecoveryForm }) {
     event.preventDefault();
 
     // Api call
-    const success = await verifyRecoveryCode(formValues, handleTokenErr);
+    const success = await verifyRecoveryCode(formValues, handleErr);
     if (success) handlePasswordVisibility();
   };
 
@@ -113,7 +93,7 @@ export default function PasswordRecovery({ handleRecoveryForm }) {
     event.preventDefault();
 
     // Api call
-    const response = await recoverPassword(formValues, handlePasswordErr);
+    const response = await recoverPassword(formValues, handleErr);
     if (response) {
       alert("Your password has been updated");
       handleRecoveryForm();
@@ -144,7 +124,7 @@ export default function PasswordRecovery({ handleRecoveryForm }) {
               variant="outlined"
               margin="normal"
               required
-              error={errorMsgs.email.length === 0 ? false : true}
+              error={errorMsgs.email ? true : false}
               helperText={errorMsgs.email}
               fullWidth
               id="email"
@@ -176,7 +156,7 @@ export default function PasswordRecovery({ handleRecoveryForm }) {
               variant="outlined"
               margin="normal"
               required
-              error={errorMsgs.token.length === 0 ? false : true}
+              error={errorMsgs.token ? true : false}
               helperText={errorMsgs.token}
               fullWidth
               id="token"
@@ -208,7 +188,7 @@ export default function PasswordRecovery({ handleRecoveryForm }) {
               margin="normal"
               type="password"
               required
-              error={errorMsgs.password.length === 0 ? false : true}
+              error={errorMsgs.password ? true : false}
               helperText={errorMsgs.password}
               fullWidth
               id="password"
@@ -224,7 +204,7 @@ export default function PasswordRecovery({ handleRecoveryForm }) {
               margin="normal"
               required
               fullWidth
-              error={errorMsgs.confirmPassword.length === 0 ? false : true}
+              error={errorMsgs.confirmPassword ? true : false}
               helperText={errorMsgs.confirmPassword}
               type="password"
               id="confirmPassword"

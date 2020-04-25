@@ -37,32 +37,20 @@ import { editContact } from "../../../../apis/contactsApi";
 
 export default function Cards(props) {
   const classes = useStyles();
-  console.log(props)
-
   const { _id, name, phoneNumber, email, handleModal, handleUpdateContacts } = props;
 
   const [updatedInfo, setInfo] = useForm({ name, phoneNumber, email });
-  const [errorMsgs, setErrMsgs] = useState({
-    name: "",
-    email: "",
-    phoneNumber: "",
-  });
+  const [errorMsgs, setErrMsgs] = useState({});
 
-  console.log(errorMsgs)
   // Controls error messages state
   const handleErrState = (state) => {
-    setErrMsgs(state);
+    setErrMsgs(state.errors);
   };
 
   const onSubmitEdit = async (event) => {
     event.preventDefault();
 
-    const updatedContact = {
-      _id, ...updatedInfo
-      // name: updatedInfo.name,
-      // phoneNumber: updatedInfo.phoneNumber,
-      // email: updatedInfo.email,
-    };
+    const updatedContact = {_id, ...updatedInfo};
 
     // API call to update contact info
     const contactEdited = await editContact(updatedContact, handleErrState);
@@ -74,7 +62,7 @@ export default function Cards(props) {
   };
 
   return (
-    <Card className={classes.card}>
+    <Card className={`${classes.card} ${classes.modalCard}`}>
       <form className={classes.form} onSubmit={onSubmitEdit} noValidate>
         {/* Card Header  */}
         <List>
@@ -114,9 +102,9 @@ export default function Cards(props) {
         </List>
 
         {/* Card Body */}
-        <CardContent>
+        <CardContent className={errorMsgs.email ? classes.cardContentError : null}>
           <List>
-            <ListItem>
+            <ListItem className={errorMsgs.name ? classes.cardInputError : null}>
               <ListItemIcon>
                 <Person className={classes.cardIcon} />
               </ListItemIcon>
@@ -125,7 +113,7 @@ export default function Cards(props) {
               <ListItemText>
                 <TextField
                   name="name"
-                  error={errorMsgs.name.length === 0 ? false : true}
+                  error={errorMsgs.name ? true : false}
                   helperText={errorMsgs.name}
                   defaultValue={name}
                   onChange={setInfo}
@@ -136,7 +124,7 @@ export default function Cards(props) {
               </ListItemText>
             </ListItem>
 
-            <ListItem>
+            <ListItem className={errorMsgs.phoneNumber ? classes.cardInputError : null}>
               <ListItemIcon>
                 <PhoneIphone className={classes.cardIcon} />
               </ListItemIcon>
@@ -145,7 +133,7 @@ export default function Cards(props) {
               <ListItemText>
                 <TextField
                   name="phoneNumber"
-                  error={errorMsgs.phoneNumber.length === 0 ? false : true}
+                  error={errorMsgs.phoneNumber ? true : false}
                   helperText={errorMsgs.phoneNumber}
                   defaultValue={phoneNumber}
                   onChange={setInfo}
@@ -157,7 +145,7 @@ export default function Cards(props) {
             </ListItem>
 
             {/* Email */}
-            <ListItem>
+            <ListItem className={errorMsgs.email ? classes.cardInputError : null}>
               <ListItemIcon>
                 <Email className={classes.cardIcon} />
               </ListItemIcon>
@@ -165,7 +153,7 @@ export default function Cards(props) {
               <ListItemText>
                 <TextField
                   name="email"
-                  error={errorMsgs.email.length === 0 ? false : true}
+                  error={errorMsgs.email ? true : false}
                   helperText={errorMsgs.email}
                   defaultValue={email}
                   onChange={setInfo}

@@ -53,7 +53,7 @@ export default function Header({ context }) {
               borderRight: "solid white 1px",
             }}
           >
-            <Typography variant="button"> {context.loggedinUser} </Typography>
+            <Typography variant="button"> {context.isAuthenticated} </Typography>
           </Grid>
 
           {/* Logout Button */}

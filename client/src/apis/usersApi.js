@@ -39,9 +39,9 @@ export async function registerUser(newUser, setErrors) {
 }
 
 // checks to see if users is authenticated
-export async function verifyUserAuth() {
+export async function getAuthenticatedUser() {
   const response = await axios.get(
-    "http://localhost:5000/api/users/isAuthenticated",
+    "http://localhost:5000/api/users/getAuthenticatedUser",
     { withCredentials: true }
   )
   .then(res => res.data)

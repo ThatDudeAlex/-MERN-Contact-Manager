@@ -26,8 +26,8 @@ export const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
 
-  modalContainer: {
-    top: "10%",
+  modalCardWrapper: {
+    outline:'0'
   },
 
   paper: {
@@ -37,14 +37,21 @@ export const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 4, 3),
   },
 
+
+
   // ----- Card Styles -----
-  card: {
-    top: "10%",
-    left: "20%",
-    overflow: "hidden",
+  infoCard: {
     marginLeft: "10px",
     marginRight: "10px",
     marginBottom: "15px",
+  },
+
+  modalCard: {
+    margin: "0px",
+  },
+
+  card: {
+    overflow: "hidden",
     borderRadius: "3%",
     boxShadow: `0px 2px 1px -1px rgba(0, 0, 0, 1), 0px 1px 1px 0px rgba(0, 0, 0, 1), 
                 0px 1px 3px 0px rgba(0, 0, 0, 1)`,
@@ -75,6 +82,16 @@ export const useStyles = makeStyles((theme) => ({
   cardIcon: {
     color: "black",
   },
+
+  cardInputError: {
+    paddingBottom: '0px'
+  },
+
+  cardContentError: {
+    paddingBottom: '0px',
+    paddingTop: '0px'
+  },
+
 
   form: {
     width: "100%", // Fix IE 11 issue.

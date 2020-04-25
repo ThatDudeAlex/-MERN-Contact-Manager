@@ -22,7 +22,6 @@ export async function editContact(updatedContact, setErrors) {
       {withCredentials: true})
       .then(res => res.data)
       .catch(error => {
-        console.log(error.response.data)
         if(error.response) setErrors(error.response.data)
       })
 
@@ -33,8 +32,11 @@ export async function editContact(updatedContact, setErrors) {
 // Completely deletes all contact info 
 export async function deleteContact(_id) {
   const response = await axios
-      .delete("http://localhost:5000/api/contacts/deleteContact", 
-      {data: { _id }}, { withCredentials: true })
+      .delete(`http://localhost:5000/api/contacts/deleteContact/${_id}`, 
+       { withCredentials: true })
+      .catch(error => {
+        if(error.response) console.log(error.response)
+      })
   
   return response.data
 }

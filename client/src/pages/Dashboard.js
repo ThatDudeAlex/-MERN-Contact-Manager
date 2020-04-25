@@ -27,8 +27,9 @@ export default function Dashboard() {
     // API call to retrieve all user contacts
     const allContacts = await getAllContacts();
 
-    if (allContacts.success)
+    if (allContacts.success){
       setUserContacts([...userContacts, ...allContacts.contacts]);
+    }
   };
 
   // adds new contact into state
@@ -38,21 +39,19 @@ export default function Dashboard() {
 
   // replaces a contact from state, with its updated version
   const handleUpdateContacts = (updatedContact) => {
+
     const updatedUserContacts = userContacts.map((contact) => {
       if (contact._id === updatedContact._id) return updatedContact;
       else return contact;
     });
-
     setUserContacts(updatedUserContacts);
   };
 
   // removes a contact from state
   const handleDeleteContacts = (_id) => {
-    setUserContacts(
-      userContacts.filter((contact) => {
-        return contact._id !== _id;
-      })
-    );
+    setUserContacts(userContacts.filter((contact) => {
+      return contact._id !== _id;
+    }))
   };
 
   return (
