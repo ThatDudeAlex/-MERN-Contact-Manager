@@ -95,7 +95,7 @@ export default function PasswordRecovery({ handleRecoveryForm }) {
     // Api call
     const response = await recoverPassword(formValues, handleErr);
     if (response) {
-      alert("Your password has been updated");
+      alert(response);
       handleRecoveryForm();
     }
   };

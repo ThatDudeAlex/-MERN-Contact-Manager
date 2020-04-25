@@ -27,8 +27,8 @@ export default function Dashboard() {
     // API call to retrieve all user contacts
     const allContacts = await getAllContacts();
 
-    if (allContacts.success){
-      setUserContacts([...userContacts, ...allContacts.contacts]);
+    if (allContacts){
+      setUserContacts([...userContacts, ...allContacts]);
     }
   };
 

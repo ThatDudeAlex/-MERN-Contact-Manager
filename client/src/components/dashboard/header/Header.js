@@ -25,12 +25,10 @@ export default function Header({ context }) {
 
   // logs user out and redirects them to '/'
   const logout = async () => {
-    const logoutStatus = await logoutUser().then((res) => res);
-
-    if (logoutStatus.success) {
-      context.actions.handleLogout();
-      history.replace("/");
-    }
+    await logoutUser();
+    
+    context.actions.handleLogout();
+    history.replace("/");
   };
 
   return (

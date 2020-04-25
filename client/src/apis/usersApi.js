@@ -17,11 +17,10 @@ export async function loginUser(userInfo, setErrors) {
 
 // logs user out & destroys session
 export async function logoutUser() {
-  const response = await axios.get("http://localhost:5000/api/users/logout", {
-    withCredentials: true,
-  });
-
-  return response.data;
+  await axios.get("http://localhost:5000/api/users/logout", {withCredentials: true})
+    .catch(error => {
+      if(error.response) alert(error.response.data)
+    })
 }
 
 // registers user info into DB

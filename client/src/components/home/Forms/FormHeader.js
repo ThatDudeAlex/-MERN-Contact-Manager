@@ -1,7 +1,7 @@
-import React, { Fragment } from "react";
+import React from "react";
 
 // Material-UI Components
-import { Avatar, Typography, Container, Grid } from "@material-ui/core";
+import { Avatar, Typography, Grid } from "@material-ui/core";
 
 // Material-UI Icons
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";

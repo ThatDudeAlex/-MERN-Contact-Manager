@@ -47,6 +47,10 @@ export async function getAllContacts() {
   const response = await axios
       .get("http://localhost:5000/api/contacts/getAllContacts", 
       { withCredentials: true })
+      .then(res => res.data)
+      .catch(error => {
+        if(error.response) console.log(error.response.data)
+      })
 
-  return response.data
+  return response
 }

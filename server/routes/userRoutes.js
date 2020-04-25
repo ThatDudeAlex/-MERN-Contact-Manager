@@ -97,10 +97,10 @@ router.get("/getAuthenticatedUser", asyncHandler((req, res) => {
 router.get("/logout", asyncHandler((req, res) => {
     if (req.session) {
       req.session.destroy((err) => {
-        if (err) return res.send({ success: false, errMsgs: err });
+        if (err) return res.status(500).send(constErrMessage.serverErr);
         else {
           req.session = null;
-          return res.send({ success: true, errMsgs: "user logged out" });
+          return res.end()
         }
       });
     }
@@ -166,7 +166,7 @@ router.put("/recoverPassword", recoveryUpdateRules(), validate, asyncHandler(asy
   // updates account with the new password
   await user.updateOne({ password: user.generateHash(password) })
 
-  return res.send("Password Changed");  
+  return res.send("Your password has been updated");  
 }))
 
 // export router, making user api's available for use

@@ -33,8 +33,8 @@ router.get("/getAllContacts", isAuthenticated, asyncHandler(async (req, res) => 
     const { userId } = req.session;
 
     // querys DB for all contacts belonging to the user
-    const contacts = await Contact.find({ userId: userId })
-    return res.json({ success: true, contacts: contacts });
+    const contacts = await Contact.find({ userId })
+    return res.json(contacts);
   })
 );
 
