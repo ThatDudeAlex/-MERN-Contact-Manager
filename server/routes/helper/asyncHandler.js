@@ -1,6 +1,6 @@
 // wraps incoming functions inside an async function with try catch methods
 const asyncHandler = (incomingFunction) => {
-  return async (req, res) => {
+  return async (req, res, next) => {
     try {
       await incomingFunction(req, res, next);
     } catch (error) {
@@ -8,4 +8,6 @@ const asyncHandler = (incomingFunction) => {
     }
   };
 };
+
+module.exports = { asyncHandler }
 

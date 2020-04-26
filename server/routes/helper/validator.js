@@ -23,6 +23,7 @@ const userLoginRules = () => {
     body('email', constErrMessage.missingEmail).notEmpty(),
     body('email', constErrMessage.incorrectEmail).isEmail(),
     body('email', constErrMessage.nonExistingEmail).custom( async(email) => {
+      email = email.toLowerCase()
       const user = await User.findOne({email})
 
       if(user) return Promise.resolve()
@@ -31,7 +32,8 @@ const userLoginRules = () => {
 
     body('password', constErrMessage.missingPassword).notEmpty(),
     body('password', constErrMessage.incorrectPassword).custom(async(password, {req}) => {
-      const user = await User.findOne({email: req.body.email})
+      const email = req.body.email.toLowerCase()
+      const user = await User.findOne({email})
       
       if(!user) return Promise.reject()
       if(user.validPassword(password, user.password)) return Promise.resolve()
@@ -50,6 +52,7 @@ const userRegisterRules = () => {
     body('email', constErrMessage.missingEmail).notEmpty(),
     body("email", constErrMessage.incorrectEmail).isEmail(),
     body('email', constErrMessage.takenEmail).custom( async(email) => {
+      email = email.toLowerCase()
       const user = await User.findOne({email})
 
       if(user) return Promise.reject()
@@ -77,7 +80,7 @@ const userContactsRules = () => {
     body("email", constErrMessage.missingContactInfo).custom((email, {req}) => {
       if(!email && !req.body.phoneNumber) return Promise.reject()
       else return Promise.resolve()
-    }),
+    })
   ]
 }
 

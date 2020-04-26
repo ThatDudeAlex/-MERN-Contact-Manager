@@ -6,6 +6,7 @@ const Contact = require("../database/models/Contact");
 
 const {isAuthenticated} = require("./helper/auth")
 const { validate, userContactsRules } = require('./helper/validator')
+const {asyncHandler} = require('./helper/asyncHandler')
 
 // Error Messages
 const constErrMessage = require("../constants/errMessages")
@@ -13,23 +14,12 @@ const constErrMessage = require("../constants/errMessages")
 // allowes router to parse json data
 router.use(express.json());
 
-// wraps incoming functions inside an async function with try catch methods
-const asyncHandler = (incomingFunction) => {
-  return async (req, res, next) => {
-    try {
-      await incomingFunction(req, res, next);
-    } catch (error) {
-      next(error);
-    }
-  };
-};
-
 /**
  * @route	GET  contacts/getAllContacts
  * @desc	gets all contacts for a given user
  * @access	public
  */
-router.get("/getAllContacts", isAuthenticated, asyncHandler(async (req, res) => {
+router.get("/getAllContacts", isAuthenticated, asyncHandler(async(req, res) => {
     const { userId } = req.session;
 
     // querys DB for all contacts belonging to the user

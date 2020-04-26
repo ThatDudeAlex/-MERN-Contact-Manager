@@ -16,22 +16,13 @@ const {
   recoveryUpdateRules
 } = require('./helper/validator')
 
+const {asyncHandler} = require('./helper/asyncHandler')
+
 // allowes router to parse json data
 router.use(express.json());
 
 // schema model
 const User = require("../database/models/User");
-
-// wraps incoming functions inside an async function with try catch methods
-const asyncHandler = (incomingFunction) => {
-  return async (req, res, next) => {
-    try {
-      await incomingFunction(req, res, next);
-    } catch (error) {
-      next(error);
-    }
-  };
-};
 
 /**
  * @route	POST  users/register
