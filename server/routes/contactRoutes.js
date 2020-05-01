@@ -1,4 +1,7 @@
 const express = require("express");
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+const AWS = require("aws-sdk");
 const router = express.Router();
 
 // schemas
@@ -7,6 +10,24 @@ const Contact = require("../database/models/Contact");
 const {isAuthenticated} = require("./helper/auth")
 const { validate, userContactsRules } = require('./helper/validator')
 const {asyncHandler} = require('./helper/asyncHandler')
+
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.awsUserKey, // aws access id here
+  region: "us-east-2",
+  secretAccessKey: process.env.awsUserSecretKey, // aws secret access key here
+});
+
+const profileImgUpload = multer({
+  storage: multerS3({
+   s3: s3,
+   bucket: process.env.awsBucket,
+   key: function (req, file, cb) {
+    cb(null, path.basename( file.originalname, path.extname( file.originalname ) ) + '-' + Date.now() + path.extname( file.originalname ) )
+   }
+  }),
+  limits:{ fileSize: 2000000 }, // In bytes: 2000000 bytes = 2 MB
+}).single('profileImage');
 
 // Error Messages
 const constErrMessage = require("../constants/errMessages")
@@ -23,8 +44,10 @@ router.get("/getAllContacts", isAuthenticated, asyncHandler(async(req, res) => {
     const { userId } = req.session;
 
     // querys DB for all contacts belonging to the user
-    const contacts = await Contact.find({ userId })
-    return res.json(contacts);
+    let allContacts = await Contact.find({ userId })
+    allContacts = allContacts.map(contact => ({...contact._doc, visible: true}))
+
+    return res.json(allContacts);
   })
 );
 
@@ -36,16 +59,21 @@ router.get("/getAllContacts", isAuthenticated, asyncHandler(async(req, res) => {
  */
 router.post("/addContact", isAuthenticated, userContactsRules(), validate,
 asyncHandler(async(req, res) => {
-    const { name, email, phoneNumber } = req.body;
+    const { name, email, phoneNumber, s3Key } = req.body;
     const { userId } = req.session;
+
+    console.log(req.body)
 
     // create new contact object, to save into DB
     const newContact = new Contact(
       { userId, name, email, phoneNumber }
     )
 
+    if(s3Key) 
+      newContact.avatarKey = s3Key
+
     await newContact.save() // saves contact to DB
-    return res.send(newContact)
+    return res.send({visible: true, ...newContact._doc})
   })
 );
 
@@ -89,6 +117,12 @@ router.patch("/editContact", isAuthenticated, userContactsRules(), validate, asy
     });
   })
 );
+
+router.get("/signPut", (req, res) => {
+
+  console.log('here')
+  return res.end()
+});
 
 // export router, making contact api's available for use
 module.exports = router;

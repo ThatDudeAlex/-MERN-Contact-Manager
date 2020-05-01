@@ -7,6 +7,9 @@ const contactSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     },
+    avatarKey:{
+        type: String
+    },
     name: {
        type: String,
        required: true

@@ -74,7 +74,10 @@ router.post("/login", userLoginRules(), validate, asyncHandler(async(req, res) =
  * @access	public
  */
 router.get("/getAuthenticatedUser", asyncHandler((req, res) => {
-    if(req.session.userId) return res.send(req.session.usersName)
+    if(req.session.userId) {
+      const user = {name: req.session.usersName, id: req.session.userId}
+      return res.send(user)
+    }
     res.end()
   })
 );

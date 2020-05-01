@@ -35,9 +35,9 @@ import { useForm } from "../../../hooks/useForm";
 // API Calls
 import { editContact } from "../../../../apis/contactsApi";
 
-export default function Cards(props) {
+export default function Cards({handleModal, handleUpdateContacts, ...props}) {
   const classes = useStyles();
-  const { _id, name, phoneNumber, email, handleModal, handleUpdateContacts } = props;
+  const {name, phoneNumber, email, ...rest} = props;
 
   const [updatedInfo, setInfo] = useForm({ name, phoneNumber, email });
   const [errorMsgs, setErrMsgs] = useState({});
@@ -49,8 +49,7 @@ export default function Cards(props) {
 
   const onSubmitEdit = async (event) => {
     event.preventDefault();
-
-    const updatedContact = {_id, ...updatedInfo};
+    const updatedContact = {...rest, ...updatedInfo};
 
     // API call to update contact info
     const contactEdited = await editContact(updatedContact, handleErrState);

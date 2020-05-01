@@ -26,18 +26,21 @@ export default function Contacts({ userContacts, handleAddContacts, ...props }) 
 
   // Initial States
   const [visibleContacts, setVisibleContacts] = useState(userContacts);
-  const [contactsLoaded, setContactsLoaded] = useState(false);
   const [modalState, setModalState] = useState(false);
 
   // tracks userContacts and & updates visibleContacts when userContacts changes
   useEffect(() => {
-    setVisibleContacts(userContacts);
+    setVisibleContacts(userContacts)
   }, [userContacts]);
 
-  // once all contacts are loaded, displays them
-  useEffect(() => {
-    setContactsLoaded(true);
-  }, [visibleContacts]);
+  // console.log(userContacts)
+
+  const hideContactCard = (_id) => {
+    setVisibleContacts(prevState => prevState.map(contact => {
+      if(contact._id === _id) return {...contact, visible: !contact.visible}
+      return contact
+    }))
+  }
 
   // filters viewable contacts based on user input
   const handleSearchBar = (event) => {
@@ -101,15 +104,14 @@ export default function Contacts({ userContacts, handleAddContacts, ...props }) 
 
       <Grid container direction="row">
         {/* Iterates user contacts array and creates a card for each one */}
-        {visibleContacts.map((contact) => {
-          
+        {visibleContacts.map(contact => {
           return (
-            <Grow in={contactsLoaded} key={contact._id} 
+            <Grow in={contact.visible} key={contact._id} 
               style={{ transformOrigin: '0 0 0' }}
-              {...(contactsLoaded ? { timeout: 1000 } : {})}
+              {...(contact.visible ? { timeout: 1000 } : {})}
             >
               <Grid item xs={12} md={6} lg={4} xl={3}>
-                <InfoCard {...contact} {...props} />
+                <InfoCard hideContactCard={hideContactCard} {...contact} {...props}  />
               </Grid>
             </Grow>
           );

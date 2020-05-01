@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Material-UI Components
 import {
@@ -21,6 +21,7 @@ import {
   AccountCircle,
   Edit,
   Delete,
+  Visibility,
 } from "@material-ui/icons";
 
 import ModalCard from "./ModalCard";
@@ -29,38 +30,79 @@ import ModalCard from "./ModalCard";
 import { useStyles } from "../styles";
 
 // API Calls
-import { deleteContact } from "../../../../apis/contactsApi";
+import { deleteContact, getUrl } from "../../../../apis/contactsApi";
 
-export default function Cards(props) {
+export default function Cards({handleDeleteContacts, handleUpdateContacts, ...props}) {
   const classes = useStyles();
-  const [modal, setModal] = useState(false);
-  const { name, phoneNumber, email, _id, handleDeleteContacts } = props;
+  const [profileImg, setProfileImg] = useState();
+  const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
-  const handleModal = () => {
-    setModal(!modal);
+  useEffect(() => {
+    onload()
+  }, [])
+
+  const onload = async() => {
+    let imgUrl = ""
+
+    if(props.avatarKey){
+      const options = {
+        params: {
+          Key: props.avatarKey,
+        }
+      };
+      imgUrl = await getUrl(options)
+      // console.log(imgUrl)
+    }
+    
+    setProfileImg(() => imgUrl)
+  }
+
+  const handleEditModal = () => {
+    setEditModal(!editModal);
+  };
+
+  const handleDeleteModal = () => {
+    setDeleteModal(!deleteModal);
   };
 
   const onSubmitDelete = async () => {
-    handleDeleteContacts(_id);
-    await deleteContact(_id); // API call to delete contact
+    props.hideContactCard(props._id)
+    handleDeleteModal()
+    setTimeout(() => {handleDeleteContacts(props._id)}, 400)
+    
+    await deleteContact(props._id); // API call to delete contact
   };
 
   const editModalProps = {
     ...props,
-    handleModal,
+    handleUpdateContacts,
+    handleModal: handleEditModal,
     editCard: true,
-    modalState: modal,
+    modalState: editModal,
+  };
+
+  const delModalProps = {
+    ...props,
+    handleDeleteContacts: onSubmitDelete,
+    handleModal: handleDeleteModal,
+    deleteCard: true,
+    modalState: deleteModal,
   };
 
   return (
     <Card className={`${classes.card} ${classes.infoCard}`}>
       <ModalCard {...editModalProps} />
-
+      <ModalCard {...delModalProps}  />
+      {console.log(profileImg)}
       {/* Card Header  */}
       <List>
         <ListItem className={classes.cardHeaderItem}>
           {/* Contact Picture */}
-          <Avatar className={classes.cardAvatar}>
+          <Avatar
+            src={profileImg ? profileImg : null}
+            alt="contact image"
+            className={classes.cardAvatar}>
             <AccountCircle className={classes.cardAvatarIcon} />
           </Avatar>
         </ListItem>
@@ -69,7 +111,7 @@ export default function Cards(props) {
           {/* Contact Name */}
           <ListItemText
             disableTypography
-            primary={name}
+            primary={props.name}
             className={classes.cardHeaderItem}
           />
         </ListItem>
@@ -84,7 +126,7 @@ export default function Cards(props) {
               <PhoneIphone className={classes.cardIcon} />
             </ListItemIcon>
 
-            <ListItemText>{phoneNumber}</ListItemText>
+            <ListItemText>{props.phoneNumber}</ListItemText>
           </ListItem>
 
           {/* Email */}
@@ -93,7 +135,7 @@ export default function Cards(props) {
               <Email className={classes.cardIcon} />
             </ListItemIcon>
 
-            <ListItemText>{email}</ListItemText>
+            <ListItemText>{props.email}</ListItemText>
           </ListItem>
         </List>
       </CardContent>
@@ -107,7 +149,7 @@ export default function Cards(props) {
           variant="outlined"
           color="primary"
           startIcon={<Edit />}
-          onClick={handleModal}
+          onClick={handleEditModal}
         >
           {" "}
           Edit{" "}
@@ -117,7 +159,7 @@ export default function Cards(props) {
           size="small"
           variant="outlined"
           color="secondary"
-          onClick={onSubmitDelete}
+          onClick={handleDeleteModal}
           startIcon={<Delete />}
         >
           Delete

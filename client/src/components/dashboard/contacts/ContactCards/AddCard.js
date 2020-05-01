@@ -33,13 +33,14 @@ import { useStyles } from "../styles";
 import { useForm } from "../../../hooks/useForm";
 
 // API Calls
-import { addContact } from "../../../../apis/contactsApi";
+import { addContact, getUrl, putUrl, imgUpload } from "../../../../apis/contactsApi";
 
-export default function Cards({ handleAddContacts, handleModal }) {
+export default function Cards({ handleAddContacts, handleModal, context }) {
   const classes = useStyles();
 
   // const [contactPicture, setContactPicture] = useState();
   const [errorMsgs, setErrMsgs] = useState({});
+  const [image, setImage] = useState({profile: null, preview: null})
 
   const [contactInfo, setContactInfo] = useForm({
     name: "",
@@ -57,27 +58,76 @@ export default function Cards({ handleAddContacts, handleModal }) {
     setErrMsgs(state.errors)
   };
 
-  // const handleImgSelection = (event) => {
-  //   console.log(contactPicture);
-  //   setContactPicture(URL.createObjectURL(event.target.files[0]));
-  // };
+  const handleImgSelection = (event) => {
+    setImage({
+      profile: event.target.files[0],
+      preview: URL.createObjectURL(event.target.files[0])
+    });
+  };
 
-  const onSubmitAdd = async (event) => {
+  const onSubmitAdd = async(event) => {
     event.preventDefault();
+    console.log(`${context.isAuthenticated.id}-${Date.now()}`)
+    let s3Key = ""
+    // let imgInfo = {};
+    let file = {}
+    let contentType = ""
+    // let avatarExt = ""
+    let options = {}
 
-    const newContact = {
-      name: contactInfo.name,
-      email: contactInfo.email,
-      phoneNumber: contactInfo.phoneNumber,
-    };
-
-    // API call to add new contact
-    const contactAdded = await addContact(newContact, handleErrState);
-
-    if (contactAdded) {
-      handleAddContacts(contactAdded);
-      handleModal();
+    
+    if(image.profile){
+      // imgInfo = {file: image.profile, contentType: image.profile.type}
+      file = image.profile
+      contentType = file.type
+      s3Key = `${context.isAuthenticated.id}-${Date.now()}.${contentType.split('/')[1]}`
+        options = {
+        params: {
+          Key: s3Key,
+          ContentType: contentType
+        },
+        headers: {
+          'Content-Type': contentType
+        }
+      };
+      // avatarExt = contentType.split('/')[1]
     }
+    
+    
+    const contactAdded = await addContact({...contactInfo, s3Key}, file, options, handleErrState);
+    // console.log(contactAdded)
+    // if(contactAdded.avatarKey){
+    //   const options = {
+    //     params: {
+    //       Key: contactAdded.avatarKey,
+    //       ContentType: contentType
+    //     },
+    //     headers: {
+    //       'Content-Type': contentType
+    //     }
+    //   };
+
+    //   await putUrl(file, options)
+    // }
+    
+
+    
+    // console.log(contactAdded)
+    // const contactAdded = await addContact({...contactInfo}, handleErrState);
+
+    // if (contactAdded && image) {
+    //   const data = new FormData()
+    //   data.append('contactId', contactAdded._id)
+    //   data.append('profileImage', image)
+    //   await imgUpload(data, contactAdded)
+    // }
+    // if(contactAdded){
+      // setTimeout(() => {
+        handleAddContacts(contactAdded);
+       handleModal();
+      // },180)
+    // }
+    
   };
 
   return (
@@ -88,11 +138,10 @@ export default function Cards({ handleAddContacts, handleModal }) {
           <ListItem className={classes.cardHeaderItem}>
             {/* Contact Avatar */}
             <Avatar
-              // src={contactPicture}
+              src={image.preview ? image.preview : null}
               alt="contact image"
               className={classes.cardAvatar}
             >
-              {/* {setDefaultAvatar()} */}
               <AccountCircle className={classes.cardAvatarIcon} />
             </Avatar>
           </ListItem>
@@ -100,7 +149,7 @@ export default function Cards({ handleAddContacts, handleModal }) {
           {/* Upload Img Btn */}
           <ListItem className={classes.cardHeaderItem}>
             <input
-              // onChange={handleImgSelection}
+              onChange={handleImgSelection}
               style={{ display: "none" }}
               accept="image/*"
               className={classes.input}

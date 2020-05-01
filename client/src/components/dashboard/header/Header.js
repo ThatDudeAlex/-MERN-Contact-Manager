@@ -46,7 +46,7 @@ export default function Header({ context }) {
             item
             className={`${classes.headerName} ${classes.headerItem}`}
           >
-            <Typography variant="button"> {context.isAuthenticated} </Typography>
+            <Typography variant="button"> {context.isAuthenticated.name} </Typography>
           </Grid>
 
           {/* Logout Button */}

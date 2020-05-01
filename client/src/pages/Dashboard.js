@@ -44,6 +44,7 @@ export default function Dashboard() {
       if (contact._id === updatedContact._id) return updatedContact;
       else return contact;
     });
+    // console.log(updatedContact)
     setUserContacts(updatedUserContacts);
   };
 
