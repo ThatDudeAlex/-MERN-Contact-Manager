@@ -30,6 +30,7 @@ export default function Contacts({ userContacts, handleAddContacts, ...props }) 
 
   // tracks userContacts and & updates visibleContacts when userContacts changes
   useEffect(() => {
+    // console.log(userContacts)
     setVisibleContacts(userContacts)
   }, [userContacts]);
 

@@ -16,7 +16,7 @@ const HeaderWithContext = WithContext(Header);
 
 export default function Dashboard() {
   // Stores user contacts
-  const [userContacts, setUserContacts] = useState([]);
+  const [userContacts, setUserContacts] = useState();
 
   useEffect(() => {
     // code to run on component mount
@@ -28,28 +28,29 @@ export default function Dashboard() {
     const allContacts = await getAllContacts();
 
     if (allContacts){
-      setUserContacts([...userContacts, ...allContacts]);
+      setUserContacts([...allContacts]);
     }
   };
 
   // adds new contact into state
   const handleAddContacts = (newContact) => {
     setUserContacts([...userContacts, newContact]);
+    // document.activeElement.blur() // to prevent double form submission
   };
 
   // replaces a contact from state, with its updated version
   const handleUpdateContacts = (updatedContact) => {
-
     const updatedUserContacts = userContacts.map((contact) => {
       if (contact._id === updatedContact._id) return updatedContact;
       else return contact;
     });
-    // console.log(updatedContact)
+
     setUserContacts(updatedUserContacts);
   };
 
   // removes a contact from state
   const handleDeleteContacts = (_id) => {
+    console.log(_id)
     setUserContacts(userContacts.filter((contact) => {
       return contact._id !== _id;
     }))
@@ -59,13 +60,14 @@ export default function Dashboard() {
     <Grid container component="main">
       <CssBaseline />
       <HeaderWithContext />
-
+    
+      {userContacts? 
       <Contacts
         userContacts={userContacts}
         handleAddContacts={handleAddContacts} 
         handleUpdateContacts={handleUpdateContacts}
         handleDeleteContacts={handleDeleteContacts}
-      />
+      />: null }
     </Grid>
   );
 }

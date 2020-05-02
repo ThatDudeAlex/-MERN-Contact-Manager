@@ -62,7 +62,7 @@ router.post("/login", userLoginRules(), validate, asyncHandler(async(req, res) =
     // Set session to expire in 5yrs ( in milli seconds ) else set it to expire in 1 hour
     // format: yrs * days * hrs * mins * secs * milliSecs
     if(rememberMe) req.session.cookie.maxAge =  5 * 365 * 24 * 60 * 60 * 1000;
-    else req.session.cookie.maxAge = 60 * 60 * 1000
+    // else req.session.cookie.maxAge = 60 * 60 * 1000
 
     return res.send(usersName);
   })
