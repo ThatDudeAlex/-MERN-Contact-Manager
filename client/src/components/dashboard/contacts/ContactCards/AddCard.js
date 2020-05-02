@@ -33,7 +33,7 @@ import { useStyles } from "../styles";
 import { useForm } from "../../../hooks/useForm";
 
 // API Calls
-import { addContact, getUrl, putUrl, imgUpload } from "../../../../apis/contactsApi";
+import { addContact } from "../../../../apis/contactsApi";
 
 export default function Cards({ handleAddContacts, handleModal, context }) {
   const classes = useStyles();
@@ -41,17 +41,12 @@ export default function Cards({ handleAddContacts, handleModal, context }) {
   // const [contactPicture, setContactPicture] = useState();
   const [errorMsgs, setErrMsgs] = useState({});
   const [image, setImage] = useState({profile: null, preview: null})
-
+  const [s3Params, setParams] = useState()
   const [contactInfo, setContactInfo] = useForm({
     name: "",
     email: "",
     phoneNumber: "",
   });
-
-  // const setDefaultAvatar = () => {
-  //   if (contactPicture === "")
-  //     return <AccountCircle className={classes.cardAvatarIcon} />;
-  // };
 
   // Controls error messages state
   const handleErrState = (state) => {
@@ -59,75 +54,50 @@ export default function Cards({ handleAddContacts, handleModal, context }) {
   };
 
   const handleImgSelection = (event) => {
+    if(event.target.files.length === 0) return
+
+    const file = event.target.files[0]
+    const contentType = file.type
+    const s3Key = `${context.isAuthenticated.id}-${Date.now()}.${contentType.split('/')[1]}`
+    const options = {
+      params: {
+        Key: s3Key,
+        ContentType: contentType
+      },
+      headers: {
+        'Content-Type': contentType
+      }
+    }
+
     setImage({
       profile: event.target.files[0],
       preview: URL.createObjectURL(event.target.files[0])
     });
+
+    setParams(() => ({s3Key, file, options}))
   };
 
   const onSubmitAdd = async(event) => {
     event.preventDefault();
-    console.log(`${context.isAuthenticated.id}-${Date.now()}`)
-    let s3Key = ""
-    // let imgInfo = {};
-    let file = {}
-    let contentType = ""
-    // let avatarExt = ""
-    let options = {}
-
     
-    if(image.profile){
-      // imgInfo = {file: image.profile, contentType: image.profile.type}
-      file = image.profile
-      contentType = file.type
-      s3Key = `${context.isAuthenticated.id}-${Date.now()}.${contentType.split('/')[1]}`
-        options = {
-        params: {
-          Key: s3Key,
-          ContentType: contentType
-        },
-        headers: {
-          'Content-Type': contentType
-        }
-      };
-      // avatarExt = contentType.split('/')[1]
+    let s3Key, file, options;
+
+    if(s3Params){
+      s3Key = s3Params.s3Key
+      file = s3Params.file
+      options =s3Params.options
     }
-    
-    
+
+    const t0 = performance.now()
     const contactAdded = await addContact({...contactInfo, s3Key}, file, options, handleErrState);
-    // console.log(contactAdded)
-    // if(contactAdded.avatarKey){
-    //   const options = {
-    //     params: {
-    //       Key: contactAdded.avatarKey,
-    //       ContentType: contentType
-    //     },
-    //     headers: {
-    //       'Content-Type': contentType
-    //     }
-    //   };
+    const t1 = performance.now()
 
-    //   await putUrl(file, options)
-    // }
-    
+    console.log(t1-t0)
 
-    
-    // console.log(contactAdded)
-    // const contactAdded = await addContact({...contactInfo}, handleErrState);
-
-    // if (contactAdded && image) {
-    //   const data = new FormData()
-    //   data.append('contactId', contactAdded._id)
-    //   data.append('profileImage', image)
-    //   await imgUpload(data, contactAdded)
-    // }
-    // if(contactAdded){
-      // setTimeout(() => {
+    if(contactAdded){
+        handleModal();
         handleAddContacts(contactAdded);
-       handleModal();
-      // },180)
-    // }
-    
+    }
   };
 
   return (

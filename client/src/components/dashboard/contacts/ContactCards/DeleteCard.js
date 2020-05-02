@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 
 // Material-UI Components
 import {
@@ -13,6 +13,8 @@ import {
   Card,
 } from "@material-ui/core";
 
+import {getUrl} from '../../../../apis/contactsApi'
+
 // Material-UI Icons
 import { AccountCircle } from "@material-ui/icons";
 
@@ -21,7 +23,23 @@ import { useStyles } from "../styles";
 
 export default function Cards(props) {
   const classes = useStyles();
+  const [profileImg, setProfileImg] = useState();
+
   const { name, handleModal, handleDeleteContacts } = props;
+
+  useEffect(() => {
+    if (props.avatarKey)
+      onload()
+  }, [])
+
+  const onload = async() => {
+    const options = {
+      params: { Key: props.avatarKey }
+    };
+    const imgUrl = await getUrl(options)
+    
+    setProfileImg(imgUrl)
+  }
 
 
   return (
@@ -30,7 +48,10 @@ export default function Cards(props) {
       <List>
         <ListItem className={classes.cardHeaderItem}>
           {/* Contact Picture */}
-          <Avatar className={classes.cardAvatar}>
+          <Avatar 
+            src={profileImg ? profileImg : null} 
+            className={classes.cardAvatar}
+          >
             <AccountCircle className={classes.cardAvatarIcon} />
           </Avatar>
         </ListItem>

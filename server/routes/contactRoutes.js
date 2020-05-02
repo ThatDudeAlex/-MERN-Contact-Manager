@@ -1,7 +1,4 @@
 const express = require("express");
-const multer = require('multer');
-const multerS3 = require('multer-s3');
-const AWS = require("aws-sdk");
 const router = express.Router();
 
 // schemas
@@ -10,24 +7,6 @@ const Contact = require("../database/models/Contact");
 const {isAuthenticated} = require("./helper/auth")
 const { validate, userContactsRules } = require('./helper/validator')
 const {asyncHandler} = require('./helper/asyncHandler')
-
-
-const s3 = new AWS.S3({
-  accessKeyId: process.env.awsUserKey, // aws access id here
-  region: "us-east-2",
-  secretAccessKey: process.env.awsUserSecretKey, // aws secret access key here
-});
-
-const profileImgUpload = multer({
-  storage: multerS3({
-   s3: s3,
-   bucket: process.env.awsBucket,
-   key: function (req, file, cb) {
-    cb(null, path.basename( file.originalname, path.extname( file.originalname ) ) + '-' + Date.now() + path.extname( file.originalname ) )
-   }
-  }),
-  limits:{ fileSize: 2000000 }, // In bytes: 2000000 bytes = 2 MB
-}).single('profileImage');
 
 // Error Messages
 const constErrMessage = require("../constants/errMessages")
@@ -61,8 +40,6 @@ router.post("/addContact", isAuthenticated, userContactsRules(), validate,
 asyncHandler(async(req, res) => {
     const { name, email, phoneNumber, s3Key } = req.body;
     const { userId } = req.session;
-
-    console.log(req.body)
 
     // create new contact object, to save into DB
     const newContact = new Contact(
@@ -117,12 +94,6 @@ router.patch("/editContact", isAuthenticated, userContactsRules(), validate, asy
     });
   })
 );
-
-router.get("/signPut", (req, res) => {
-
-  console.log('here')
-  return res.end()
-});
 
 // export router, making contact api's available for use
 module.exports = router;

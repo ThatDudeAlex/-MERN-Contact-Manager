@@ -4,7 +4,7 @@ const asyncHandler = (incomingFunction) => {
     try {
       await incomingFunction(req, res, next);
     } catch (error) {
-      next(error);
+      console.log(error)
     }
   };
 };

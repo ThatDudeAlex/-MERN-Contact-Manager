@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Material-UI Components
 import {
@@ -33,14 +33,29 @@ import { useStyles } from "../styles";
 import { useForm } from "../../../hooks/useForm";
 
 // API Calls
-import { editContact } from "../../../../apis/contactsApi";
+import { editContact, getUrl } from "../../../../apis/contactsApi";
 
 export default function Cards({handleModal, handleUpdateContacts, ...props}) {
   const classes = useStyles();
   const {name, phoneNumber, email, ...rest} = props;
 
   const [updatedInfo, setInfo] = useForm({ name, phoneNumber, email });
+  const [profileImg, setProfileImg] = useState();
   const [errorMsgs, setErrMsgs] = useState({});
+
+  useEffect(() => {
+    if (props.avatarKey)
+      onload()
+  }, [])
+
+  const onload = async() => {
+    const options = {
+      params: { Key: props.avatarKey }
+    };
+    const imgUrl = await getUrl(options)
+    
+    setProfileImg(imgUrl)
+  }
 
   // Controls error messages state
   const handleErrState = (state) => {
@@ -68,7 +83,7 @@ export default function Cards({handleModal, handleUpdateContacts, ...props}) {
           <ListItem className={classes.cardHeaderItem}>
             {/* Contact Avatar */}
             <Avatar
-              // src={contactImg}
+              src={profileImg ? profileImg : null}
               alt="contact image"
               className={classes.cardAvatar}
             >

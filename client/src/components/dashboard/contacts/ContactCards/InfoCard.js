@@ -39,23 +39,17 @@ export default function Cards({handleDeleteContacts, handleUpdateContacts, ...pr
   const [deleteModal, setDeleteModal] = useState(false);
 
   useEffect(() => {
-    onload()
+    if (props.avatarKey)
+      onload()
   }, [])
 
   const onload = async() => {
-    let imgUrl = ""
+    const options = {
+      params: { Key: props.avatarKey }
+    };
 
-    if(props.avatarKey){
-      const options = {
-        params: {
-          Key: props.avatarKey,
-        }
-      };
-      imgUrl = await getUrl(options)
-      // console.log(imgUrl)
-    }
-    
-    setProfileImg(() => imgUrl)
+    const imgUrl = await getUrl(options)
+    setProfileImg(imgUrl)
   }
 
   const handleEditModal = () => {
@@ -94,7 +88,7 @@ export default function Cards({handleDeleteContacts, handleUpdateContacts, ...pr
     <Card className={`${classes.card} ${classes.infoCard}`}>
       <ModalCard {...editModalProps} />
       <ModalCard {...delModalProps}  />
-      {console.log(profileImg)}
+
       {/* Card Header  */}
       <List>
         <ListItem className={classes.cardHeaderItem}>
