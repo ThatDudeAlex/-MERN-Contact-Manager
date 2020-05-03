@@ -35,7 +35,7 @@ import { useForm } from "../../../hooks/useForm";
 // API Calls
 import { editContact, getUrl } from "../../../../apis/contactsApi";
 
-export default function Cards({handleModal, handleUpdateContacts, ...props}) {
+export default function Cards({handleModal, handleEditContact, ...props}) {
   const classes = useStyles();
   const {name, phoneNumber, email, ...rest} = props;
 
@@ -70,7 +70,7 @@ export default function Cards({handleModal, handleUpdateContacts, ...props}) {
     const contactEdited = await editContact(updatedContact, handleErrState);
 
     if (contactEdited) {
-      handleUpdateContacts(updatedContact);
+      handleEditContact(updatedContact);
       handleModal();
     }
   };

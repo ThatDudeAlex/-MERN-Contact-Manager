@@ -35,7 +35,7 @@ import { useForm } from "../../../hooks/useForm";
 // API Calls
 import { addContact } from "../../../../apis/contactsApi";
 
-export default function Cards({ handleAddContacts, handleModal, context }) {
+export default function Cards({ handleAddContact, handleModal, context }) {
   const classes = useStyles();
 
   // const [contactPicture, setContactPicture] = useState();
@@ -88,15 +88,15 @@ export default function Cards({ handleAddContacts, handleModal, context }) {
       options =s3Params.options
     }
 
-    const t0 = performance.now()
+    // const t0 = performance.now()
     const contactAdded = await addContact({...contactInfo, s3Key}, file, options, handleErrState);
-    const t1 = performance.now()
+    // const t1 = performance.now()
 
-    console.log(t1-t0)
+    // console.log(t1-t0)
 
     if(contactAdded){
         handleModal();
-        handleAddContacts(contactAdded);
+        handleAddContact(contactAdded);
     }
   };
 

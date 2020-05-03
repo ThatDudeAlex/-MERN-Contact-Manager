@@ -25,7 +25,7 @@ export default function Cards(props) {
   const classes = useStyles();
   const [profileImg, setProfileImg] = useState();
 
-  const { name, handleModal, handleDeleteContacts } = props;
+  const { name, handleModal, handleDeleteContact } = props;
 
   useEffect(() => {
     if (props.avatarKey)
@@ -36,9 +36,7 @@ export default function Cards(props) {
     const options = {
       params: { Key: props.avatarKey }
     };
-    const imgUrl = await getUrl(options)
-    
-    setProfileImg(imgUrl)
+    setProfileImg(await getUrl(options))
   }
 
 
@@ -83,7 +81,7 @@ export default function Cards(props) {
           size="small"
           variant="outlined"
           color="secondary"
-          onClick={handleDeleteContacts}
+          onClick={handleDeleteContact}
         >
           {" "}
           Delete{" "}

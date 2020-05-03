@@ -32,7 +32,7 @@ import { useStyles } from "../styles";
 // API Calls
 import { deleteContact, getUrl } from "../../../../apis/contactsApi";
 
-export default function Cards({handleDeleteContacts, handleUpdateContacts, ...props}) {
+export default function Cards({handleDeleteContact, handleEditContact, ...props}) {
   const classes = useStyles();
   const [profileImg, setProfileImg] = useState();
   const [editModal, setEditModal] = useState(false);
@@ -47,9 +47,7 @@ export default function Cards({handleDeleteContacts, handleUpdateContacts, ...pr
     const options = {
       params: { Key: props.avatarKey }
     };
-
-    const imgUrl = await getUrl(options)
-    setProfileImg(imgUrl)
+    setProfileImg(await getUrl(options))
   }
 
   const handleEditModal = () => {
@@ -61,16 +59,17 @@ export default function Cards({handleDeleteContacts, handleUpdateContacts, ...pr
   };
 
   const onSubmitDelete = async () => {
+    const deletedContact = {name: props.name, _id: props._id}
     props.hideContactCard(props._id)
     handleDeleteModal()
-    setTimeout(() => {handleDeleteContacts(props._id)}, 400)
+    setTimeout(() => {handleDeleteContact(deletedContact)}, 400)
     
     await deleteContact(props._id); // API call to delete contact
   };
 
   const editModalProps = {
     ...props,
-    handleUpdateContacts,
+    handleEditContact,
     handleModal: handleEditModal,
     editCard: true,
     modalState: editModal,
@@ -78,7 +77,7 @@ export default function Cards({handleDeleteContacts, handleUpdateContacts, ...pr
 
   const delModalProps = {
     ...props,
-    handleDeleteContacts: onSubmitDelete,
+    handleDeleteContact: onSubmitDelete,
     handleModal: handleDeleteModal,
     deleteCard: true,
     modalState: deleteModal,
@@ -87,7 +86,7 @@ export default function Cards({handleDeleteContacts, handleUpdateContacts, ...pr
   return (
     <Card className={`${classes.card} ${classes.infoCard}`}>
       <ModalCard {...editModalProps} />
-      <ModalCard {...delModalProps}  />
+      <ModalCard {...delModalProps}  /> 
 
       {/* Card Header  */}
       <List>

@@ -68,6 +68,7 @@ router.delete("/deleteContact/:_id", isAuthenticated, asyncHandler(async(req, re
 
     // deletes contact from DB and returns it
     const deletedContact = await Contact.findOneAndDelete({_id})
+    
     if (deletedContact) return res.end()
   })
 );
