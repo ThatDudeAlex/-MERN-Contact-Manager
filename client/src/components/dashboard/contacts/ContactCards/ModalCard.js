@@ -13,18 +13,18 @@ import DeleteCard from "./DeleteCard"
 import WithContext from "../../../context";
 
 const AddCardWithContext = WithContext(AddCard)
+const EditCardWithContext = WithContext(EditCard)
 
 // modal used to display add or edit contact cards
 export default function ModalCard({handleAddContacts, handleUpdateContacts, handleDeleteContacts, ...props}) {
   const classes = useStyles();
   const {modalState, addCard, editCard, deleteCard, ...rest} = props
-  // console.log(rest)
 
   const getCard = () => {
     if (addCard)
       return <AddCardWithContext handleAddContacts={handleAddContacts} {...rest} />;
     else if (editCard)
-      return <EditCard handleUpdateContacts={handleUpdateContacts} {...rest} />;
+      return <EditCardWithContext handleUpdateContacts={handleUpdateContacts} {...rest} />;
     else if (deleteCard)
       return <DeleteCard handleDeleteContacts={handleDeleteContacts} {...rest} />;
   };

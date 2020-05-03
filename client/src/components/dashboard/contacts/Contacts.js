@@ -68,12 +68,8 @@ export default function Contacts() {
   }
 
   const editFromState = (updatedContact) => {
-    console.log(updatedContact)
     setUserContacts(userContacts.map(contact => {
-      if (contact._id === updatedContact._id) {
-        // console.log('hi')
-        return updatedContact
-      }
+      if (contact._id === updatedContact._id) return updatedContact
       else return contact;
     }))
   }
@@ -81,7 +77,7 @@ export default function Contacts() {
   const editFromSearchedState = (updatedContact) => {
     setSearchedContacts(searchedContacts.map(contact => {
       if (contact._id === updatedContact._id){
-        // console.log('hey')
+        console.log('hey')
         return updatedContact;
       } 
       else return contact;
@@ -131,7 +127,7 @@ export default function Contacts() {
   const handleEditContact = (updatedContact) => {
     const name = updatedContact.name.toLowerCase()
     const search = searchString.toLowerCase()
-    console.log(name, ' === ', search)
+
     if(name.includes(search)){
       editFromState(updatedContact)
       editFromSearchedState(updatedContact)
@@ -191,6 +187,7 @@ export default function Contacts() {
             className={classes.addBtn}
             size="medium"
             startIcon={<Add />}
+            disabled={modalState? true : false}
             onClick={handleModal}
           >
             Add

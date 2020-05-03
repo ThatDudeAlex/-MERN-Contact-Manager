@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import imageCompression from 'browser-image-compression';
 
 // Material-UI Components
 import {
@@ -37,29 +38,52 @@ import { addContact } from "../../../../apis/contactsApi";
 
 export default function Cards({ handleAddContact, handleModal, context }) {
   const classes = useStyles();
-
-  // const [contactPicture, setContactPicture] = useState();
+  // Initial States
   const [errorMsgs, setErrMsgs] = useState({});
-  const [image, setImage] = useState({profile: null, preview: null})
-  const [s3Params, setParams] = useState()
+  const [previewImage, setPreviewImage] = useState()
+  const [s3Params, setParams] = useState({})
+  const [submit, setSubmit] = useState(false)
   const [contactInfo, setContactInfo] = useForm({
     name: "",
     email: "",
     phoneNumber: "",
   });
+  
+  // --- state functions ---
+  const errorMsgsState = (errors) => {
+    setErrMsgs(() => errors)
+  }
+
+  const previewImageState = (file) => {
+    setPreviewImage(() => URL.createObjectURL(file)
+    );
+  }
+
+  const s3ParamsState = (file, s3Key, options) => {
+    setParams(() =>({file, s3Key, options}))
+  }
+
+  const submitState = (value) => {
+    setSubmit(() => value)
+  }
+
+  // --- State Controllers ---
 
   // Controls error messages state
-  const handleErrState = (state) => {
-    setErrMsgs(state.errors)
+  const handleErrState = (errors) => {
+    errorMsgsState(errors)
+    submitState(false)
   };
 
-  const handleImgSelection = (event) => {
+  const handleImgSelection = async(event) => {
     if(event.target.files.length === 0) return
 
-    const file = event.target.files[0]
+    let options = { maxSizeMB: 0.1, maxWidthOrHeight: 360 }
+    const file = await imageCompression(event.target.files[0], options)
     const contentType = file.type
     const s3Key = `${context.isAuthenticated.id}-${Date.now()}.${contentType.split('/')[1]}`
-    const options = {
+
+    options = {
       params: {
         Key: s3Key,
         ContentType: contentType
@@ -68,32 +92,19 @@ export default function Cards({ handleAddContact, handleModal, context }) {
         'Content-Type': contentType
       }
     }
-
-    setImage({
-      profile: event.target.files[0],
-      preview: URL.createObjectURL(event.target.files[0])
-    });
-
-    setParams(() => ({s3Key, file, options}))
+    
+    previewImageState(file)
+    s3ParamsState(file, s3Key, options)
   };
 
+  // --- Submit Controller ---
   const onSubmitAdd = async(event) => {
     event.preventDefault();
+    submitState(true)
     
-    let s3Key, file, options;
-
-    if(s3Params){
-      s3Key = s3Params.s3Key
-      file = s3Params.file
-      options =s3Params.options
-    }
-
-    // const t0 = performance.now()
-    const contactAdded = await addContact({...contactInfo, s3Key}, file, options, handleErrState);
-    // const t1 = performance.now()
-
-    // console.log(t1-t0)
-
+    const contactAdded = await addContact(
+      {...contactInfo, s3Key: s3Params.s3Key}, s3Params.file, s3Params.options, handleErrState
+    );
     if(contactAdded){
         handleModal();
         handleAddContact(contactAdded);
@@ -102,13 +113,13 @@ export default function Cards({ handleAddContact, handleModal, context }) {
 
   return (
     <Card className={`${classes.card} ${classes.modalCard}`}>
-      <form onSubmit={onSubmitAdd} noValidate>
+      <form noValidate>
         {/* Card Header  */}
         <List>
           <ListItem className={classes.cardHeaderItem}>
             {/* Contact Avatar */}
             <Avatar
-              src={image.preview ? image.preview : null}
+              src={previewImage ? previewImage : null}
               alt="contact image"
               className={classes.cardAvatar}
             >
@@ -211,6 +222,8 @@ export default function Cards({ handleAddContact, handleModal, context }) {
             variant="outlined"
             color="primary"
             type="submit"
+            disabled={submit? true : false}
+            onClick={onSubmitAdd}
             startIcon={<AddBox />}
           >
             {" "}
@@ -220,6 +233,7 @@ export default function Cards({ handleAddContact, handleModal, context }) {
           <Button
             onClick={handleModal}
             size="small"
+            type="button"
             variant="outlined"
             color="secondary"
             startIcon={<Cancel />}

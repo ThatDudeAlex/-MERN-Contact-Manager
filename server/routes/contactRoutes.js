@@ -80,7 +80,7 @@ router.delete("/deleteContact/:_id", isAuthenticated, asyncHandler(async(req, re
  * @access	public
  */
 router.patch("/editContact", isAuthenticated, userContactsRules(), validate, asyncHandler(async(req, res) => {
-    const { _id, name, email, phoneNumber } = req.body;
+    const { _id, name, email, phoneNumber, s3Key } = req.body;
 
     // Checks if contact _id is invalid
     if (!_id) return res.status(500).send({msg: constErrMessage.serverErr});
@@ -89,10 +89,18 @@ router.patch("/editContact", isAuthenticated, userContactsRules(), validate, asy
     contact = await Contact.findById(_id)
 
     // Updated contact info
-    contact.updateOne({ name, email, phoneNumber }, (err) => {
-      if (err) return res.status(500).send({msg: constErrMessage.serverErr});
-      else return res.send("Contact Updated");
-    });
+    if(s3Key){
+      console.log('==== ', s3Key)
+      contact.updateOne({ name, email, phoneNumber, avatarKey: s3Key }, (err) => {
+        if (err) return res.status(500).send({msg: constErrMessage.serverErr});
+      });
+    } else {
+      contact.updateOne({ name, email, phoneNumber }, (err) => {
+        if (err) return res.status(500).send({msg: constErrMessage.serverErr});
+      });
+    }
+      
+    return res.send("Contact Updated");
   })
 );
 

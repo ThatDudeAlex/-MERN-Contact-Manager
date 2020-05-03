@@ -37,7 +37,7 @@ app.use(
 // ------- Routes -----------
 const userRoutes = require("./routes/userRoutes");
 const contactRoutes = require("./routes/contactRoutes");
-const s3 = require("./routes/aws-s3")
+const s3 = require("./routes/s3Routes")
 
 // API route modules
 app.use("/api/users", userRoutes);

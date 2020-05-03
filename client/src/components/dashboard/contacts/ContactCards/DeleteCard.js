@@ -32,13 +32,18 @@ export default function Cards(props) {
       onload()
   }, [])
 
+  // --- state functions ---
+  const profileImgState = (imgUrl) => {
+    setProfileImg(() => imgUrl)
+  }
+
   const onload = async() => {
     const options = {
       params: { Key: props.avatarKey }
     };
-    setProfileImg(await getUrl(options))
+    const imgUrl = await getUrl(options)
+    profileImgState(imgUrl)
   }
-
 
   return (
     <Card className={`${classes.card} ${classes.infoCard}`}>

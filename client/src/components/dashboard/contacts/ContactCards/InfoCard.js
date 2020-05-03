@@ -43,11 +43,16 @@ export default function Cards({handleDeleteContact, handleEditContact, ...props}
       onload()
   }, [])
 
+  const profileImgState = (imgUrl) => {
+    setProfileImg(() => imgUrl)
+  }
+
   const onload = async() => {
     const options = {
       params: { Key: props.avatarKey }
     };
-    setProfileImg(await getUrl(options))
+    const imgUrl = await getUrl(options)
+    profileImgState(imgUrl)
   }
 
   const handleEditModal = () => {

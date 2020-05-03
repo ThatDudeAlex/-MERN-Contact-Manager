@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import imageCompression from 'browser-image-compression';
+
 
 // Material-UI Components
 import {
@@ -35,14 +37,19 @@ import { useForm } from "../../../hooks/useForm";
 // API Calls
 import { editContact, getUrl } from "../../../../apis/contactsApi";
 
-export default function Cards({handleModal, handleEditContact, ...props}) {
+export default function Cards({handleModal, handleEditContact, context, ...props}) {
   const classes = useStyles();
   const {name, phoneNumber, email, ...rest} = props;
 
+  // Initial States
   const [updatedInfo, setInfo] = useForm({ name, phoneNumber, email });
   const [profileImg, setProfileImg] = useState();
   const [errorMsgs, setErrMsgs] = useState({});
+  const [previewImage, setPreviewImage] = useState()
+  const [s3Params, setParams] = useState({})
+  const [submit, setSubmit] = useState(false)
 
+  // --- on component loading functions ---
   useEffect(() => {
     if (props.avatarKey)
       onload()
@@ -53,21 +60,81 @@ export default function Cards({handleModal, handleEditContact, ...props}) {
       params: { Key: props.avatarKey }
     };
     const imgUrl = await getUrl(options)
-    
-    setProfileImg(imgUrl)
+    profileImgState(imgUrl)
   }
 
+  // --- state functions ---
+  const profileImgState = (imgUrl) => {
+    setProfileImg(() => imgUrl)
+  }
+
+  const errorMsgsState = (errors) => {
+    setErrMsgs(() => errors)
+  }
+
+  const previewImageState = (file) => {
+    setPreviewImage(() => URL.createObjectURL(file)
+    );
+  }
+
+  const s3ParamsState = (file, s3Key, options) => {
+    setParams(() =>({file, s3Key, options}))
+  }
+
+  const submitState = (value) => {
+    setSubmit(() => value)
+  }
+
+
+  // --- State Controllers ---
+
   // Controls error messages state
-  const handleErrState = (state) => {
-    setErrMsgs(state.errors);
+  const handleErrState = (errors) => {
+    errorMsgsState(errors);
   };
 
+  const handleImgSelection = async(event) => {
+    if(event.target.files.length === 0) return
+
+    let options = { maxSizeMB: 0.1, maxWidthOrHeight: 360 }
+    const file = await imageCompression(event.target.files[0], options)
+    const contentType = file.type
+    const s3Key = `${context.isAuthenticated.id}-${Date.now()}.${contentType.split('/')[1]}`
+
+    console.log(s3Key)
+    options = {
+      params: {
+        Key: s3Key,
+        ContentType: contentType
+      },
+      headers: {
+        'Content-Type': contentType
+      }
+    }
+    
+    previewImageState(file)
+    s3ParamsState(file, s3Key, options)
+  };
+
+  // --- Submit Controller ---
   const onSubmitEdit = async (event) => {
     event.preventDefault();
-    const updatedContact = {...rest, ...updatedInfo};
+    const {avatarKey} = rest
+    let updatedContact = {};
 
+    console.log(avatarKey)
+
+    if (s3Params.file){
+      // console.log('hiii')
+      updatedContact = {avatarKey: s3Params.s3Key, ...rest, ...updatedInfo}
+    }
+    else
+      updatedContact = {avatarKey, ...rest, ...updatedInfo}
+    // console.log(updatedContact.avatarKey)
     // API call to update contact info
-    const contactEdited = await editContact(updatedContact, handleErrState);
+    const contactEdited = await editContact(
+      {...updatedContact, s3Key: s3Params.s3Key}, s3Params.file, s3Params.options, handleErrState
+    );
 
     if (contactEdited) {
       handleEditContact(updatedContact);
@@ -83,7 +150,9 @@ export default function Cards({handleModal, handleEditContact, ...props}) {
           <ListItem className={classes.cardHeaderItem}>
             {/* Contact Avatar */}
             <Avatar
-              src={profileImg ? profileImg : null}
+              src={previewImage ? previewImage : (
+                profileImg ? profileImg : null
+              )}
               alt="contact image"
               className={classes.cardAvatar}
             >
@@ -94,7 +163,7 @@ export default function Cards({handleModal, handleEditContact, ...props}) {
           {/* Upload Img Btn */}
           <ListItem className={classes.cardHeaderItem}>
             <input
-              // onChange={handleImgSelection}
+              onChange={handleImgSelection}
               style={{ display: "none" }}
               accept="image/*"
               className={classes.input}

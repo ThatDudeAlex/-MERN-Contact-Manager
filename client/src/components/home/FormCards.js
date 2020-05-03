@@ -37,7 +37,7 @@ export default function HomeCard() {
           handleRecoveryForm={handleRecoveryForm}
         />
       );
-    
+      
     else if (!viewForm && !viewRecovery)
       return <SignUpWithContext handleStandardForms={handleStandardForms} />;
   };

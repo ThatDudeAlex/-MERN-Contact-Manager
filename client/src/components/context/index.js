@@ -12,26 +12,27 @@ export const Provider = (props) => {
   const [isAuthenticated, setAuthentication] = useState(null);
 
   useEffect(() => {
-    // code to run on-mount 
     onLoad();
   },[]);
 
   // gets & sets user authentication state on component render
   const onLoad = async () => {
     const user = await getAuthenticatedUser();
-    if(user){
-      setAuthentication(user);
-    }
+    if(user) isAuthState(user);
   };
+
+  const isAuthState = (user) => {
+    setAuthentication(() => user)
+  }
 
   // updates user state when logged in successfully
   const handleLogin = (user) => {
-    setAuthentication(user);
+    isAuthState(user);
   };
 
   // updates userAuth state when logged out successfully
   const handleLogout = () => {
-    setAuthentication(null);
+    isAuthState(null);
   };
 
   return (
