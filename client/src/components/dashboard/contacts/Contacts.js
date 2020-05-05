@@ -7,7 +7,8 @@ import {
   TextField,
   InputAdornment,
   Button,
-  Grow
+  Grow,
+  Typography
 } from "@material-ui/core";
 
 // Material-UI Icons
@@ -27,10 +28,11 @@ export default function Contacts() {
   const classes = useStyles();
 
   // Initial States
-  const [userContacts, setUserContacts] = useState([]);
+  const [loading, setLoading]                   = useState(true)
+  const [userContacts, setUserContacts]         = useState([]);
   const [searchedContacts, setSearchedContacts] = useState([]);
-  const [searchString, setSearchString] = useState('');
-  const [modalState, setModalState] = useState(false);
+  const [searchString, setSearchString]         = useState('');
+  const [modalState, setModalState]             = useState(false);
 
   // tracks userContacts and & updates searchedContacts when userContacts changes
   useEffect(() => {
@@ -45,7 +47,12 @@ export default function Contacts() {
       setUserContacts([...contacts]);
       setSearchedContacts([...contacts])
     }
+    endLoadingState()
   };
+
+  const endLoadingState = () => {
+    setLoading(!loading)
+  }
 
   const addToState = (newContact) => {
     setUserContacts(prevState => ([...prevState, newContact]))
@@ -203,13 +210,27 @@ export default function Contacts() {
               style={{ transformOrigin: '0 0 0' }}
               {...(contact.visible ? { timeout: 1000 } : {})}
             >
-              <Grid item xs={12} md={6} lg={4} xl={3}>
+              <Grid item xs={12}>
                 <InfoCard hideContactCard={hideContactCard} {...contact} {...cardFunctions} />
               </Grid>
             </Grow>
           );
         })}
+        
       </Grid>
+
+      <Grid container style={{paddingTop: '4%'}} justify="center">
+        {!loading? 
+        <Grid item>
+          <Typography>{
+            (userContacts.length > 0)? `${userContacts.length} Contacts` : 'No Contacts'
+            }</Typography>
+        </Grid>
+        : null
+        }
+      </Grid>
+
+
 
     </Container>
   );

@@ -14,6 +14,33 @@ const constErrMessage = require("../constants/errMessages")
 // allowes router to parse json data
 router.use(express.json());
 
+const newContactObj = () => {
+  return {
+    size: 0,
+    contacts: new Array(26).fill(null),
+    contactSizes: new Array(26).fill(0)
+  }
+}
+
+const fillContactsObj = (contactObj, allContacts) => {
+
+  const firstLetterInAlphabet = 'a'.charCodeAt(0)
+
+  for(let i = 0; i < allContacts.length; i++){
+    const namesInitial = allContacts[i].name[0].toLowerCase().charCodeAt(0)
+    const spotInArray  = namesInitial - firstLetterInAlphabet 
+
+    contactObj.size += 1
+    contactObj.contactSizes[spotInArray] += 1
+    
+    if(contactObj.contacts[spotInArray] === null)
+      contactObj.contacts[spotInArray] = [allContacts[i]]
+    else 
+      contactObj.contacts.push(allContacts[i])
+  }
+  return contactObj
+}
+
 /**
  * @route	GET  contacts/getAllContacts
  * @desc	gets all contacts for a given user
@@ -21,9 +48,16 @@ router.use(express.json());
  */
 router.get("/getAllContacts", isAuthenticated, asyncHandler(async(req, res) => {
     const { userId } = req.session;
+    let contacts = newContactObj()
+
+    // console.log(contacts)
+
 
     // querys DB for all contacts belonging to the user
     let allContacts = await Contact.find({ userId })
+    contacts = fillContactsObj(contacts, allContacts)
+    console.log(contacts)
+    // allContacts.forEach(contact => console.log(contact))
     allContacts = allContacts.map(contact => ({...contact._doc, visible: true}))
 
     return res.json(allContacts);
@@ -90,7 +124,6 @@ router.patch("/editContact", isAuthenticated, userContactsRules(), validate, asy
 
     // Updated contact info
     if(s3Key){
-      console.log('==== ', s3Key)
       contact.updateOne({ name, email, phoneNumber, avatarKey: s3Key }, (err) => {
         if (err) return res.status(500).send({msg: constErrMessage.serverErr});
       });

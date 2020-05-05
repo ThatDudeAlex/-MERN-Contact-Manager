@@ -64,14 +64,14 @@ export const useStyles = makeStyles((theme) => ({
   },
 
   cardAvatar: {
-    height: "100px",
-    width: "100px",
+    height: "80px",
+    width: "80px",
     backgroundColor: "#1976d2",
     border: "2px solid black",
   },
 
   cardAvatarIcon: {
-    fontSize: "90px",
+    fontSize: "70px",
   },
 
   cardContent: {
@@ -98,6 +98,11 @@ export const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
 
+  'cardList': {
+    display: 'flex',
+    flexDirection : 'row'
+  },
+
   // query
   '@media (max-width: 768px)':{
     searchBarContainer:{
@@ -105,12 +110,20 @@ export const useStyles = makeStyles((theme) => ({
       marginBottom:"2.5%"
     }
   },
-  '@media (min-width: 768px)':{
+  '@media (min-width: 768px)': {
     searchBarContainer:{
       paddingTop: "6%",
       marginBottom:"2.5%"
     }
   },
+
+  '@media (max-width: 960px)' :{
+    'cardList': {
+      // display: 'flex',
+      flexDirection: 'column'
+    },
+  },
+
   '@media (min-width: 992px)':{
     searchBarContainer:{
       paddingTop: "4%",
