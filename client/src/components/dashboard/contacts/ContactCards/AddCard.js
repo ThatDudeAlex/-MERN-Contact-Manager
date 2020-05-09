@@ -101,7 +101,7 @@ export default function Cards({ handleAddContact, handleModal, context }) {
   const onSubmitAdd = async(event) => {
     event.preventDefault();
     submitState(true)
-    
+    // console.time('api')
     const contactAdded = await addContact(
       {...contactInfo, s3Key: s3Params.s3Key}, s3Params.file, s3Params.options, handleErrState
     );
@@ -109,6 +109,7 @@ export default function Cards({ handleAddContact, handleModal, context }) {
         handleModal();
         handleAddContact(contactAdded);
     }
+    // console.timeEnd('api')
   };
 
   return (

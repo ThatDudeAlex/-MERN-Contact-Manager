@@ -32,17 +32,17 @@ export default function Cards(props) {
       onload()
   }, [])
 
-  // --- state functions ---
-  const profileImgState = (imgUrl) => {
-    setProfileImg(() => imgUrl)
-  }
-
   const onload = async() => {
     const options = {
       params: { Key: props.avatarKey }
     };
     const imgUrl = await getUrl(options)
     profileImgState(imgUrl)
+  }
+
+  // --- state functions ---
+  const profileImgState = (imgUrl) => {
+    setProfileImg(() => imgUrl)
   }
 
   return (

@@ -17,26 +17,38 @@ router.use(express.json());
 const newContactObj = () => {
   return {
     size: 0,
-    contacts: new Array(26).fill(null),
-    contactSizes: new Array(26).fill(0)
+    contacts: new Array(27).fill(null),
   }
 }
+
+const getContactIdx = (string) => {
+  const stringInitial = string[0].toLowerCase().charCodeAt(0);
+  const firstLetterInAlphabet = "a".charCodeAt(0);
+  const nonAlphabeticCharIndex = 26;
+  let alphabeticIdx = stringInitial - firstLetterInAlphabet;
+
+  if (alphabeticIdx > 25 || alphabeticIdx < 0)
+    alphabeticIdx = nonAlphabeticCharIndex;
+
+  return alphabeticIdx;
+};
 
 const fillContactsObj = (contactObj, allContacts) => {
 
   const firstLetterInAlphabet = 'a'.charCodeAt(0)
 
   for(let i = 0; i < allContacts.length; i++){
-    const namesInitial = allContacts[i].name[0].toLowerCase().charCodeAt(0)
-    const spotInArray  = namesInitial - firstLetterInAlphabet 
+    const alphabeticIdx  = getContactIdx(allContacts[i]._doc.name)
+    const contact = {...allContacts[i]._doc, visible: true}
 
     contactObj.size += 1
-    contactObj.contactSizes[spotInArray] += 1
     
-    if(contactObj.contacts[spotInArray] === null)
-      contactObj.contacts[spotInArray] = [allContacts[i]]
+    if(contactObj.contacts[alphabeticIdx] === null)
+      contactObj.contacts[alphabeticIdx] = [contact]
     else 
-      contactObj.contacts.push(allContacts[i])
+      contactObj.contacts[alphabeticIdx].push(contact)
+
+    // contactObj.contacts[spotInArray][i].visible = true
   }
   return contactObj
 }
@@ -56,11 +68,11 @@ router.get("/getAllContacts", isAuthenticated, asyncHandler(async(req, res) => {
     // querys DB for all contacts belonging to the user
     let allContacts = await Contact.find({ userId })
     contacts = fillContactsObj(contacts, allContacts)
-    console.log(contacts)
+    // console.log(contacts)
     // allContacts.forEach(contact => console.log(contact))
-    allContacts = allContacts.map(contact => ({...contact._doc, visible: true}))
+    // allContacts = allContacts.map(contact => ({...contact._doc, visible: true}))
 
-    return res.json(allContacts);
+    return res.json(contacts);
   })
 );
 

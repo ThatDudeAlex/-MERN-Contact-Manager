@@ -119,26 +119,30 @@ export default function Cards({handleModal, handleEditContact, context, ...props
   // --- Submit Controller ---
   const onSubmitEdit = async (event) => {
     event.preventDefault();
+    const prevContactInfo = {name, _id: props._id}
     const {avatarKey} = rest
-    let updatedContact = {};
+    let updContactInfo = {avatarKey, ...rest, ...updatedInfo};
+    
 
-    console.log(avatarKey)
+    // console.log(avatarKey)
 
     if (s3Params.file){
       // console.log('hiii')
-      updatedContact = {avatarKey: s3Params.s3Key, ...rest, ...updatedInfo}
+      updContactInfo = {avatarKey: s3Params.s3Key, ...rest, ...updatedInfo}
     }
     else
-      updatedContact = {avatarKey, ...rest, ...updatedInfo}
-    // console.log(updatedContact.avatarKey)
+      updContactInfo = {avatarKey, ...rest, ...updatedInfo}
+    // console.log(updContactInfo.avatarKey)
     // API call to update contact info
     const contactEdited = await editContact(
-      {...updatedContact, s3Key: s3Params.s3Key}, s3Params.file, s3Params.options, handleErrState
+      {...updContactInfo, s3Key: s3Params.s3Key}, s3Params.file, s3Params.options, handleErrState
     );
-
+      
     if (contactEdited) {
-      handleEditContact(updatedContact);
+      // console.log(contactEdited)
+      // updContactInfo.avatarKey = previewImage
       handleModal();
+      handleEditContact(updContactInfo, prevContactInfo);
     }
   };
 

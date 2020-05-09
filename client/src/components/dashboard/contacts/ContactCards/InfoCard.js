@@ -52,15 +52,21 @@ export default function Cards({
   const [deleteModal, setDeleteModal] = useState(false);
 
   useEffect(() => {
-    if (props.avatarKey) onload();
-    if (window.innerWidth >= 1280) setExpanded(true);
+    console.log('loaddddddd')
+    // if (props.avatarKey) onload();
+    if (window.innerWidth >= 1280) setExpanded(() => true);
     window.addEventListener("resize", resize);
+
+    return () => {
+      console.log('compounent unmounted')
+      window.removeEventListener("resize", resize);
+    }
+    
   }, []);
 
-  const resize = () => {
-    if (window.innerWidth >= 1280) setExpanded(true);
-    else setExpanded(false);
-  };
+  useEffect(() => {
+    if (props.avatarKey) onload()
+  })
 
   const onload = async () => {
     const options = {
@@ -69,6 +75,12 @@ export default function Cards({
     const imgUrl = await getUrl(options);
     profileImgState(imgUrl);
   };
+
+  const resize = () => {
+    if (window.innerWidth >= 1280) setExpanded(() => true);
+    else setExpanded(false);
+  };
+
 
   const profileImgState = (imgUrl) => {
     setProfileImg(() => imgUrl);
@@ -86,15 +98,12 @@ export default function Cards({
     setDeleteModal(!deleteModal);
   };
 
-  const onSubmitDelete = async () => {
+  const onSubmitDelete = () => {
     const deletedContact = { name: props.name, _id: props._id };
-    props.hideContactCard(props._id);
+    
     handleDeleteModal();
-    setTimeout(() => {
-      handleDeleteContact(deletedContact);
-    }, 400);
-
-    await deleteContact(props._id); // API call to delete contact
+    handleDeleteContact(deletedContact);
+    deleteContact(props._id); // API call to delete contact
   };
 
   const editModalProps = {
@@ -126,8 +135,9 @@ export default function Cards({
 
       <List className={classes.cardList}>
         <Grid container alignItems='center'>
+
           <Grid item xs={12} lg={3}>
-            <CardActionArea onClick={handleExpanded}>
+            <CardActionArea disabled={(window.innerWidth >= 1280)? true : false} onClick={handleExpanded}>
               <ListItem>
                 <ListItemAvatar>
                   <Avatar src={profileImg ? profileImg : null} />
@@ -140,6 +150,7 @@ export default function Cards({
           <Grid item xs={12} lg={9}>
             <Collapse in={expanded} timeout={500}>
               <List className={classes.cardList}>
+
                 <ListItem>
                   <ListItemIcon>
                     <PhoneIphone className={classes.cardIcon} />
@@ -153,7 +164,9 @@ export default function Cards({
                   </ListItemIcon>
                   <ListItemText>{props.email}</ListItemText>
                 </ListItem>
+
                 <Divider variant="middle" />
+
                 <ListItem>
                   <CardActions>
                     <Button
@@ -181,6 +194,7 @@ export default function Cards({
               </List>
             </Collapse>
           </Grid>
+
         </Grid>
       </List>
 

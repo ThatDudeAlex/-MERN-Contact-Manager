@@ -44,6 +44,8 @@ export const useStyles = makeStyles((theme) => ({
     marginLeft: "10px",
     marginRight: "10px",
     marginBottom: "15px",
+    paddingTop: '0px',
+    paddingBottom: '0px'
   },
 
   modalCard: {
@@ -52,7 +54,6 @@ export const useStyles = makeStyles((theme) => ({
 
   card: {
     overflow: "hidden",
-    borderRadius: "3%",
     boxShadow: `0px 2px 1px -1px rgba(0, 0, 0, 1), 0px 1px 1px 0px rgba(0, 0, 0, 1), 
                 0px 1px 3px 0px rgba(0, 0, 0, 1)`,
   },
