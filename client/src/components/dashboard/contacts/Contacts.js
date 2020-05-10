@@ -48,6 +48,7 @@ export default function Contacts() {
       setUserContacts(() => [...data.contacts]);
       setSearchedContacts(() => [...data.contacts]);
       setNumContacts(data.size);
+      setLoading(!loading)
     }
   };
 
@@ -99,29 +100,9 @@ export default function Contacts() {
   };
 
   const removeFromSearchedState = (deletedContact, alphabeticIdx) => {
-    setSearchedContacts(prevState => 
-      shrinkRemovedContact(prevState, deletedContact, alphabeticIdx)  
-    )
-    // wait for contact card to shrink then remove 
-    setTimeout(() => {
       setSearchedContacts(prevState => 
         removeContactHelper(prevState, deletedContact, alphabeticIdx)
       )
-    }, 250)
-  };
-
-  const shrinkRemovedContact = (prevContactState, deletedContact, alphabeticIdx) => {
-    return prevContactState.map((column, idx) => {
-      if (idx !== alphabeticIdx) 
-        return column
-      else
-        return column.map(contact => {
-          if(contact._id === deletedContact._id)
-            return {...contact, visible: !contact.visible}
-          else
-            return contact
-        })
-    });
   };
 
   const removeContactHelper = (prevContactState, deletedContact, alphabeticIdx) => {
@@ -189,10 +170,14 @@ export default function Contacts() {
 
   // ----- EDIT CONTACTS CONTROLLER -----
   const handleEditContact = (updContactInfo, prevContactInfo) => {
+
     const prevContAlphaIdx = getContactIdx(prevContactInfo.name);
     const alphabeticIdx = getContactIdx(updContactInfo.name);
     const name = updContactInfo.name.toLowerCase();
     const search = searchString.toLowerCase();
+
+    // console.log('prev: ', prevContactInfo)
+    // console.log('curr: ', updContactInfo)
 
     if ( (prevContAlphaIdx !== alphabeticIdx) && (name.includes(search)) ) {
       removeFromSearchedState(prevContactInfo, prevContAlphaIdx);
@@ -253,43 +238,28 @@ export default function Contacts() {
   };
 
   // COMPONENT FUNCTIONS  /////////////////////////////////////////////////////////////
-  
-  const loopSearchedContacts = (contact) => {
-    // infoCardJSX = <InfoCard />
 
-    return contact.map(contact => {
-      // {console.log(contact.visible)}
-        return <Grow
-          in={contact.visible}
-          key={contact._id}
-          style={{ transformOrigin: "0 0 0" }}
-          {...(contact.visible ? { timeout: 800 } : {})}
-        >
-          <InfoCard {...contact} {...cardFunctions} />
-        </Grow>
-    })
-  }
-  
   const letterHeader = (alphabeticIdx) => {
     let letterJSX = null;
 
     if(alphabeticIdx < 26)
-      letterJSX = <div>{String.fromCharCode(65 + alphabeticIdx)}</div>
+      letterJSX = <div style={{fontWeight: '700', borderBottom: 'solid black 2px', marginBottom: '10px', marginTop: '30px'}}>{String.fromCharCode(65 + alphabeticIdx)}</div>
     else
       letterJSX = <div>#</div>
 
-    return (
-      <Grow
-        in={searchedContacts[alphabeticIdx] && searchedContacts[alphabeticIdx].length > 0 ? true : false}
-        style={{ transformOrigin: "0 0 0" }}
-        {...(searchedContacts[alphabeticIdx] ? { timeout: 700 } : {})}
-      >
-        {letterJSX}
-      </Grow>
-    )
+    if(searchedContacts[alphabeticIdx].length > 0)
+      return (
+        <Grow
+          in={searchedContacts[alphabeticIdx] ? true : false}
+          style={{ transformOrigin: "0 0 0" }}
+          {...(searchedContacts[alphabeticIdx] ? { timeout: 3500 } : {})}
+        >
+          <div>
+            {letterJSX}
+          </div>
+        </Grow>
+      )
   }
-
-
 
   const cardFunctions = { handleEditContact, handleDeleteContact };
   return (
@@ -343,104 +313,37 @@ export default function Contacts() {
         </Grid>
       </Grid>
 
+      {/* {!loading ? ( */}
       <Grid container direction="row">
-        {
+        
+        { 
           searchedContacts.map((column, idx) => {
             if(!column)
               return column
 
-            {/* const cards = loopSearchedContacts(column) */}
             return(
               <div key={idx} style={{ width: "100%" }}>
-                <div>
-                  {letterHeader(idx)}
-                </div>
-
-                <div>
-                  {column.map(contact => {
-                    return (
-                        <Grow
-                          in={contact.visible}
-                          key={contact._id}
-                          style={{ transformOrigin: "0 0 0" }}
-                          {...(contact.visible ? { timeout: 800 } : {})}
-                        >
-                          {/* <Grid item xs={12}> */}
-                            <InfoCard
-                              {...contact}
-                              {...cardFunctions}
-                            />
-                          {/* </Grid> */}
-                        </Grow>
-                      );
-                  })}
-                </div>
+                {letterHeader(idx)}
+                
+                {column.map(contact => 
+                  <InfoCard key={contact._id} {...contact} {...cardFunctions} />
+                )}
               </div>
             )
-          })
-        }
-        {/* {searchedContacts.map((alphabetLetter, idx) => {
-          if (alphabetLetter && alphabetLetter.length > 0) {
-            const letter = String.fromCharCode(65 + idx);
-            return (
-              <div key={idx} style={{ width: "100%" }}>
-                <Grow
-                  in={
-                    searchedContacts[idx] && searchedContacts[idx].length > 0
-                      ? true
-                      : false
-                  }
-                  style={{ transformOrigin: "0 0 0" }}
-                  {...(searchedContacts[idx] ? { timeout: 700 } : {})}
-                >
-                  <div
-                    style={{
-                      fontWeight: "700",
-                      fontSize: "20px",
-                      marginBottom: "20px",
-                      marginTop: "20px",
-                      borderBottom: "solid black 2px",
-                    }}
-                  >
-                    {letter}
-                  </div>
-                </Grow>
-
-                <div>
-                  {searchedContacts[idx] &&
-                    searchedContacts[idx].map((contact) => {
-                      return (
-                        <Grow
-                          in={contact.visible}
-                          key={contact._id}
-                          style={{ transformOrigin: "0 0 0" }}
-                          {...(contact.visible ? { timeout: 800 } : {})}
-                        > */}
-                          {/* <Grid item xs={12}> */}
-                            {/* <InfoCard
-                              {...contact}
-                              {...cardFunctions}
-                            /> */}
-                          {/* </Grid> */}
-                        {/* </Grow>
-                      );
-                    })}
-                </div>
-              </div>
-            );
-          }
-        })} */}
+          })}
       </Grid>
-
-      {/* <Grid container style={{ paddingTop: "4%" }} justify="center">
-        {userContacts ? (
+        {/* ) : null} */}
+      {/* {!loading ? (
+      <Grid container style={{ paddingTop: "4%" }} justify="center">
+        
           <Grid item>
             <Typography>
               {numContacts > 0 ? `${numContacts} Contacts` : "No Contacts"}
             </Typography>
           </Grid>
-        ) : null}
-      </Grid> */}
+      </Grid>
+      ) : null} */}
+      
     </Container>
   );
 }
@@ -461,17 +364,3 @@ export default function Contacts() {
 // else
 //   contactState[alphabeticIdx] = [...contactState[alphabeticIdx], newContact]
 // setUserContacts(contactState)
-
-// -------- just in case info card render function ---------------
-        /* {searchedContacts.map(contact => {
-          return (
-            <Grow in={contact.visible} key={contact._id} 
-              style={{ transformOrigin: '0 0 0' }}
-              {...(contact.visible ? { timeout: 1000 } : {})}
-            >
-              <Grid item xs={12}>
-                <InfoCard hideContactCard={hideContactCard} {...contact} {...cardFunctions} />
-              </Grid>
-            </Grow>
-          );
-        })} */

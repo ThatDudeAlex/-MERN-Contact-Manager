@@ -63,8 +63,8 @@ export default function Cards({ handleAddContact, handleModal, context }) {
     setParams(() =>({file, s3Key, options}))
   }
 
-  const submitState = (value) => {
-    setSubmit(() => value)
+  const submitState = (bool) => {
+    setSubmit(bool)
   }
 
   // --- State Controllers ---

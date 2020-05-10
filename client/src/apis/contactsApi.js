@@ -60,9 +60,13 @@ export async function editContact(updatedContact, file, options, setErrors) {
   try {
     if (file){
       const [s3, contact] = await axios.all([s3UploadCall(file, options), editCall(updatedContact)])
-      return contact.data
+      const updatedImgUrl = await getUrl({ params: { Key: options.params.Key } })
+      const newData = {contact, updatedImgUrl}
+      
+      return newData
     }
-    else return await editCall(updatedContact)
+    else 
+      return await editCall(updatedContact)
   } catch (error) {
     if(error.response.data.errors) setErrors(error.response.data.errors)
     else console.log(error.response.data)

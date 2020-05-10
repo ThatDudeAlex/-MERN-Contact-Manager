@@ -37,7 +37,7 @@ import { useForm } from "../../../hooks/useForm";
 // API Calls
 import { editContact, getUrl } from "../../../../apis/contactsApi";
 
-export default function Cards({handleModal, handleEditContact, context, ...props}) {
+export default function Cards({handleModal, handleEditContact, changeProfileImg, context, ...props}) {
   const classes = useStyles();
   const {name, phoneNumber, email, ...rest} = props;
 
@@ -81,8 +81,8 @@ export default function Cards({handleModal, handleEditContact, context, ...props
     setParams(() =>({file, s3Key, options}))
   }
 
-  const submitState = (value) => {
-    setSubmit(() => value)
+  const submitState = (bool) => {
+    setSubmit(bool)
   }
 
 
@@ -91,6 +91,7 @@ export default function Cards({handleModal, handleEditContact, context, ...props
   // Controls error messages state
   const handleErrState = (errors) => {
     errorMsgsState(errors);
+    submitState(false)
   };
 
   const handleImgSelection = async(event) => {
@@ -101,7 +102,6 @@ export default function Cards({handleModal, handleEditContact, context, ...props
     const contentType = file.type
     const s3Key = `${context.isAuthenticated.id}-${Date.now()}.${contentType.split('/')[1]}`
 
-    console.log(s3Key)
     options = {
       params: {
         Key: s3Key,
@@ -119,28 +119,27 @@ export default function Cards({handleModal, handleEditContact, context, ...props
   // --- Submit Controller ---
   const onSubmitEdit = async (event) => {
     event.preventDefault();
-    const prevContactInfo = {name, _id: props._id}
+    submitState(true)
+
     const {avatarKey} = rest
+    const prevContactInfo = {name, avatarKey,  _id: props._id}
     let updContactInfo = {avatarKey, ...rest, ...updatedInfo};
-    
 
-    // console.log(avatarKey)
-
-    if (s3Params.file){
-      // console.log('hiii')
+    if (s3Params.file)
       updContactInfo = {avatarKey: s3Params.s3Key, ...rest, ...updatedInfo}
-    }
     else
       updContactInfo = {avatarKey, ...rest, ...updatedInfo}
-    // console.log(updContactInfo.avatarKey)
+
     // API call to update contact info
     const contactEdited = await editContact(
       {...updContactInfo, s3Key: s3Params.s3Key}, s3Params.file, s3Params.options, handleErrState
     );
-      
+
     if (contactEdited) {
-      // console.log(contactEdited)
-      // updContactInfo.avatarKey = previewImage
+
+      if(contactEdited.updatedImgUrl)
+        changeProfileImg(contactEdited.updatedImgUrl)
+
       handleModal();
       handleEditContact(updContactInfo, prevContactInfo);
     }
@@ -262,6 +261,7 @@ export default function Cards({handleModal, handleEditContact, context, ...props
             type="submit"
             variant="outlined"
             color="primary"
+            disabled={submit ? true : false}
             startIcon={<Save />}
             // onClick={onSubmitEdit}
           >

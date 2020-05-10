@@ -18,6 +18,7 @@ import {
   Typography,
   IconButton,
   Collapse,
+  Grow,
   ListItemSecondaryAction,
 } from "@material-ui/core";
 
@@ -47,39 +48,61 @@ export default function Cards({
 }) {
   const classes = useStyles();
   const [profileImg, setProfileImg] = useState();
+  const [visibility, setVisibility] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [screen, setScreen] = useState(400)
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
 
   useEffect(() => {
-    console.log('loaddddddd')
-    // if (props.avatarKey) onload();
-    if (window.innerWidth >= 1280) setExpanded(() => true);
-    window.addEventListener("resize", resize);
+    if (props.avatarKey) 
+      onload();
+    else
+      setVisibility(!visibility)
+
+    if (window.innerWidth >= 1280) 
+      setExpanded(true);
+
+    // const debouncedHandleResize = debounce(function handleResize() {
+    //   setScreen(window.innerWidth)
+    // }, 1000)
+    
+    // window.addEventListener("resize", debouncedHandleResize);
 
     return () => {
       console.log('compounent unmounted')
-      window.removeEventListener("resize", resize);
+      // window.removeEventListener("resize", debouncedHandleResize);
     }
-    
   }, []);
 
-  useEffect(() => {
-    if (props.avatarKey) onload()
-  })
+  // function debounce(fn, ms) {
+  //   let timer
+  //   return _ => {
+  //     clearTimeout(timer)
+  //     timer = setTimeout(_ => {
+  //       timer = null
+  //       fn.apply(this, arguments)
+  //     }, ms)
+  //   };
+  // }
+
 
   const onload = async () => {
     const options = {
       params: { Key: props.avatarKey },
     };
     const imgUrl = await getUrl(options);
-    profileImgState(imgUrl);
-  };
 
-  const resize = () => {
-    if (window.innerWidth >= 1280) setExpanded(() => true);
-    else setExpanded(false);
-  };
+    // setScreen(window.innerWidth)
+    profileImgState(imgUrl)
+    setVisibility(!visibility)
+  }
+
+  // const resize = () => {
+  //   if (window.innerWidth >= 1280) setExpanded(false);
+  //   setScreen(window.innerWidth)
+  //   // else setExpanded(false);
+  // };
 
 
   const profileImgState = (imgUrl) => {
@@ -98,17 +121,69 @@ export default function Cards({
     setDeleteModal(!deleteModal);
   };
 
-  const onSubmitDelete = () => {
+  const onSubmitDelete = async() => {
     const deletedContact = { name: props.name, _id: props._id };
     
+    setVisibility(!visibility)
+    await deleteContact(deletedContact._id) // API call to delete contact
+
     handleDeleteModal();
     handleDeleteContact(deletedContact);
-    deleteContact(props._id); // API call to delete contact
   };
+
+  const AttributeList = () => {
+    return (
+      <List className={classes.cardList}>
+
+      <ListItem>
+        <ListItemIcon>
+          <PhoneIphone className={classes.cardIcon} />
+        </ListItemIcon>
+        <ListItemText>{props.phoneNumber}</ListItemText>
+      </ListItem>
+
+      <ListItem>
+        <ListItemIcon>
+          <Email className={classes.cardIcon} />
+        </ListItemIcon>
+        <ListItemText>{props.email}</ListItemText>
+      </ListItem>
+
+      <Divider variant="middle" />
+
+      <ListItem>
+        <CardActions>
+          <Button
+            size="small"
+            variant="outlined"
+            color="primary"
+            startIcon={<Edit />}
+            onClick={handleEditModal}
+          >
+            {" "}
+            Edit{" "}
+          </Button>
+
+          <Button
+            size="small"
+            variant="outlined"
+            color="secondary"
+            onClick={handleDeleteModal}
+            startIcon={<Delete />}
+          >
+            Delete
+          </Button>
+        </CardActions>
+      </ListItem>
+    </List>
+    )
+  }
+
 
   const editModalProps = {
     ...props,
     handleEditContact,
+    changeProfileImg: profileImgState,
     handleModal: handleEditModal,
     editCard: true,
     modalState: editModal,
@@ -122,17 +197,16 @@ export default function Cards({
     modalState: deleteModal,
   };
 
-  const flexContainer = {
-    display: "flex",
-    flexDirection: "row",
-    padding: 0,
-  };
-
   return (
+    <Grow
+      in={visibility}
+      style={{ transformOrigin: "0 0 0" }}
+      {...(visibility ? { timeout: 850 } : {})}
+      >
     <Card className={`${classes.card} ${classes.infoCard}`}>
       <ModalCard {...editModalProps} />
       <ModalCard {...delModalProps} />
-
+      
       <List className={classes.cardList}>
         <Grid container alignItems='center'>
 
@@ -148,56 +222,19 @@ export default function Cards({
           </Grid>
 
           <Grid item xs={12} lg={9}>
-            <Collapse in={expanded} timeout={500}>
-              <List className={classes.cardList}>
-
-                <ListItem>
-                  <ListItemIcon>
-                    <PhoneIphone className={classes.cardIcon} />
-                  </ListItemIcon>
-                  <ListItemText>{props.phoneNumber}</ListItemText>
-                </ListItem>
-
-                <ListItem>
-                  <ListItemIcon>
-                    <Email className={classes.cardIcon} />
-                  </ListItemIcon>
-                  <ListItemText>{props.email}</ListItemText>
-                </ListItem>
-
-                <Divider variant="middle" />
-
-                <ListItem>
-                  <CardActions>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      color="primary"
-                      startIcon={<Edit />}
-                      onClick={handleEditModal}
-                    >
-                      {" "}
-                      Edit{" "}
-                    </Button>
-
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      color="secondary"
-                      onClick={handleDeleteModal}
-                      startIcon={<Delete />}
-                    >
-                      Delete
-                    </Button>
-                  </CardActions>
-                </ListItem>
-              </List>
-            </Collapse>
+            {window.innerWidth < 1280 ?
+              <Collapse in={expanded} timeout={500}>
+                <AttributeList />
+              </Collapse>
+              :
+              <AttributeList />
+            }
+            
           </Grid>
 
         </Grid>
       </List>
-
+      
       {/* <Grid container> */}
       {/* Row 1 */}
       {/* <Grid item xs={12}>
@@ -369,5 +406,6 @@ export default function Cards({
         </Button>
       </CardActions> */}
     </Card>
+    </Grow>
   );
 }
