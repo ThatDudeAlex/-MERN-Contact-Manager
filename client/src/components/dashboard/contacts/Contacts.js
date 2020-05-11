@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+// import { useMediaQuery } from 'react-responsive'
 
 // Material-UI Components
 import {
@@ -26,6 +27,7 @@ import { getAllContacts } from "../../../apis/contactsApi";
 // Displays all user contacts
 export default function Contacts() {
   const classes = useStyles();
+
 
   // Initial States
   const [loading, setLoading] = useState(true);

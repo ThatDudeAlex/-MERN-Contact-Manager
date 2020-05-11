@@ -1,5 +1,6 @@
 // API library
 import axios from "axios";
+import { keys } from "@material-ui/core/styles/createBreakpoints";
 
 // ----- try/catch wrapper under construction -----
 // wraps incoming functions inside an async function with try catch methods
@@ -20,6 +21,11 @@ const s3UploadCall = async(file, options) => {
 
 const s3GetCall = async(options) => {
   return axios.get("http://localhost:5000/api/aws/generate-get-url", options)
+}
+
+const s3DeleteCall = async(Key) => {
+  console.log(Key)
+  return axios.delete(`http://localhost:5000/api/aws/delete-object/${Key}`)
 }
 
 const getAllCall = async() => {
@@ -56,14 +62,17 @@ export async function addContact(newContact, file, options, setErrors) {
 
 
 // Changes info from an existing contact
-export async function editContact(updatedContact, file, options, setErrors) {
+export async function editContact(updatedContact, file, prevS3key, options, setErrors) {
   try {
-    if (file){
-      const [s3, contact] = await axios.all([s3UploadCall(file, options), editCall(updatedContact)])
-      const updatedImgUrl = await getUrl({ params: { Key: options.params.Key } })
-      const newData = {contact, updatedImgUrl}
-      
-      return newData
+    if (file) {
+      if (prevS3key) s3DeleteCall(prevS3key)
+
+      const getOptions = { params: { Key: options.params.Key }}
+      const [s3, contact, updatedImgUrl] = await axios.all([
+        s3UploadCall(file, options), editCall(updatedContact), getUrl(getOptions)
+      ])
+
+      return {contact, updatedImgUrl}
     }
     else 
       return await editCall(updatedContact)
@@ -75,9 +84,14 @@ export async function editContact(updatedContact, file, options, setErrors) {
 
 
 // Completely deletes all contact info 
-export async function deleteContact(_id) {
+export async function deleteContact(deletedContact) {
   try {
-    return await deleteCall(_id)
+    if(deletedContact.avatarKey){
+      const [db, s3] = await axios.all([deleteCall(deletedContact._id), s3DeleteCall(deletedContact.avatarKey)])
+      return {db, s3}
+    }
+
+    return await deleteCall(deletedContact._id)
   } catch (error) {
     console.log(error.response.data)
   }

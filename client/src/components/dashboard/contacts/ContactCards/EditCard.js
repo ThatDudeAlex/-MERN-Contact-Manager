@@ -41,6 +41,8 @@ export default function Cards({handleModal, handleEditContact, changeProfileImg,
   const classes = useStyles();
   const {name, phoneNumber, email, ...rest} = props;
 
+  // console.log(props)
+
   // Initial States
   const [updatedInfo, setInfo] = useForm({ name, phoneNumber, email });
   const [profileImg, setProfileImg] = useState();
@@ -51,6 +53,7 @@ export default function Cards({handleModal, handleEditContact, changeProfileImg,
 
   // --- on component loading functions ---
   useEffect(() => {
+    console.log('hi')
     if (props.avatarKey)
       onload()
   }, [])
@@ -101,7 +104,7 @@ export default function Cards({handleModal, handleEditContact, changeProfileImg,
     const file = await imageCompression(event.target.files[0], options)
     const contentType = file.type
     const s3Key = `${context.isAuthenticated.id}-${Date.now()}.${contentType.split('/')[1]}`
-
+    
     options = {
       params: {
         Key: s3Key,
@@ -112,6 +115,9 @@ export default function Cards({handleModal, handleEditContact, changeProfileImg,
       }
     }
     
+
+    console.log(s3Key)
+    console.log(props.avatarKey)
     previewImageState(file)
     s3ParamsState(file, s3Key, options)
   };
@@ -121,22 +127,24 @@ export default function Cards({handleModal, handleEditContact, changeProfileImg,
     event.preventDefault();
     submitState(true)
 
-    const {avatarKey} = rest
-    const prevContactInfo = {name, avatarKey,  _id: props._id}
-    let updContactInfo = {avatarKey, ...rest, ...updatedInfo};
+    const prevS3key = rest.avatarKey
+    const prevContactInfo = {...props}
+    let updContactInfo = {...rest, ...updatedInfo};
 
-    if (s3Params.file)
-      updContactInfo = {avatarKey: s3Params.s3Key, ...rest, ...updatedInfo}
-    else
-      updContactInfo = {avatarKey, ...rest, ...updatedInfo}
+    if (s3Params.file){
+      updContactInfo = {...updContactInfo, avatarKey: s3Params.s3Key}
+    }
+    // else
+    //   updContactInfo = {avatarKey, ...rest, ...updatedInfo}
 
+    console.time('a')
     // API call to update contact info
     const contactEdited = await editContact(
-      {...updContactInfo, s3Key: s3Params.s3Key}, s3Params.file, s3Params.options, handleErrState
+      {...updContactInfo, s3Key: s3Params.s3Key}, s3Params.file, prevS3key, s3Params.options, handleErrState
     );
+    console.timeEnd('a')
 
     if (contactEdited) {
-
       if(contactEdited.updatedImgUrl)
         changeProfileImg(contactEdited.updatedImgUrl)
 
@@ -144,6 +152,17 @@ export default function Cards({handleModal, handleEditContact, changeProfileImg,
       handleEditContact(updContactInfo, prevContactInfo);
     }
   };
+
+
+  const getUpdatedInfo = () => {
+
+  }
+
+  const getCurrInfo = () => {
+    return {
+
+    }
+  }
 
   return (
     <Card className={`${classes.card} ${classes.modalCard}`}>
@@ -185,6 +204,18 @@ export default function Cards({handleModal, handleEditContact, changeProfileImg,
               </Button>
             </label>
           </ListItem>
+
+          {/* {previewImage && <ListItem className={classes.cardHeaderItem}>
+            <Button
+              startIcon={<Cancel />}
+              size='small'
+              onClick={removePreviewImageState}
+              variant="outlined"
+              color="secondary"
+            >
+              Remove
+            </Button>
+          </ListItem>} */}
         </List>
 
         {/* Card Body */}

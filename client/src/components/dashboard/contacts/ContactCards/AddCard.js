@@ -59,6 +59,10 @@ export default function Cards({ handleAddContact, handleModal, context }) {
     );
   }
 
+  const removePreviewImageState = () => {
+    setPreviewImage(null)
+  }
+
   const s3ParamsState = (file, s3Key, options) => {
     setParams(() =>({file, s3Key, options}))
   }
@@ -97,6 +101,10 @@ export default function Cards({ handleAddContact, handleModal, context }) {
     s3ParamsState(file, s3Key, options)
   };
 
+  const removeSelectedImg = () => {
+    previewImageState(null)
+  }
+
   // --- Submit Controller ---
   const onSubmitAdd = async(event) => {
     event.preventDefault();
@@ -111,6 +119,9 @@ export default function Cards({ handleAddContact, handleModal, context }) {
     }
     // console.timeEnd('api')
   };
+
+
+
 
   return (
     <Card className={`${classes.card} ${classes.modalCard}`}>
@@ -150,6 +161,18 @@ export default function Cards({ handleAddContact, handleModal, context }) {
               </Button>
             </label>
           </ListItem>
+
+          {/* {previewImage && <ListItem className={classes.cardHeaderItem}>
+            <Button
+              startIcon={<Cancel />}
+              size='small'
+              onClick={removePreviewImageState}
+              variant="outlined"
+              color="secondary"
+            >
+              Remove
+            </Button>
+          </ListItem>} */}
         </List>
 
         {/* Card Body */}
@@ -241,6 +264,7 @@ export default function Cards({ handleAddContact, handleModal, context }) {
           >
             Cancel
           </Button>
+
         </CardActions>
       </form>
     </Card>

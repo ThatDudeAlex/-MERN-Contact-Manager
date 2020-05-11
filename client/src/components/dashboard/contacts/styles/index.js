@@ -19,23 +19,26 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
 
+  // all good
+  
   // ----- Modal Styles -----
   modal: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    outline:'0'
   },
 
   modalCardWrapper: {
     outline:'0'
   },
 
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
+  // paper: {
+  //   backgroundColor: theme.palette.background.paper,
+  //   border: "1px solid #000",
+  //   boxShadow: theme.shadows[5],
+  //   padding: theme.spacing(2, 4, 3),
+  // },
 
 
 

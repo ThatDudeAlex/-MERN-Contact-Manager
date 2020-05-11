@@ -35,11 +35,9 @@ const getContactIdx = (string) => {
 
 const fillContactsObj = (contactObj, allContacts) => {
 
-  const firstLetterInAlphabet = 'a'.charCodeAt(0)
-
   for(let i = 0; i < allContacts.length; i++){
     const alphabeticIdx  = getContactIdx(allContacts[i]._doc.name)
-    const contact = {...allContacts[i]._doc, visible: true}
+    const contact = {...allContacts[i]._doc}
 
     contactObj.size += 1
     
@@ -47,8 +45,6 @@ const fillContactsObj = (contactObj, allContacts) => {
       contactObj.contacts[alphabeticIdx] = [contact]
     else 
       contactObj.contacts[alphabeticIdx].push(contact)
-
-    // contactObj.contacts[spotInArray][i].visible = true
   }
   return contactObj
 }
@@ -96,7 +92,7 @@ asyncHandler(async(req, res) => {
       newContact.avatarKey = s3Key
 
     await newContact.save() // saves contact to DB
-    return res.send({visible: true, ...newContact._doc})
+    return res.send({...newContact._doc})
   })
 );
 
