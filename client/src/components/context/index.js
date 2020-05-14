@@ -22,7 +22,7 @@ export const Provider = (props) => {
   };
 
   const isAuthState = (user) => {
-    setAuthentication(() => user)
+    setAuthentication(user)
   }
 
   // updates user state when logged in successfully

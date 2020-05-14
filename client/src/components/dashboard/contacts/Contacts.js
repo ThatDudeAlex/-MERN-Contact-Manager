@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import { useMediaQuery } from 'react-responsive'
 
 // Material-UI Components
 import {
@@ -27,10 +26,9 @@ import { getAllContacts } from "../../../apis/contactsApi";
 // Displays all user contacts
 export default function Contacts() {
   const classes = useStyles();
-
+  const nonAlphabeticCharIndex = 26;
 
   // Initial States
-  const [loading, setLoading] = useState(true);
   const [userContacts, setUserContacts] = useState([]);
   const [searchedContacts, setSearchedContacts] = useState([]);
   const [searchString, setSearchString] = useState("");
@@ -50,7 +48,6 @@ export default function Contacts() {
       setUserContacts(() => [...data.contacts]);
       setSearchedContacts(() => [...data.contacts]);
       setNumContacts(data.size);
-      setLoading(!loading)
     }
   };
 
@@ -178,9 +175,6 @@ export default function Contacts() {
     const name = updContactInfo.name.toLowerCase();
     const search = searchString.toLowerCase();
 
-    // console.log('prev: ', prevContactInfo)
-    // console.log('curr: ', updContactInfo)
-
     if ( (prevContAlphaIdx !== alphabeticIdx) && (name.includes(search)) ) {
       removeFromSearchedState(prevContactInfo, prevContAlphaIdx);
       removeFromState(prevContactInfo, prevContAlphaIdx)
@@ -230,7 +224,6 @@ export default function Contacts() {
   const getContactIdx = (string) => {
     const stringInitial = string[0].toLowerCase().charCodeAt(0);
     const firstLetterInAlphabet = "a".charCodeAt(0);
-    const nonAlphabeticCharIndex = 26;
     let alphabeticIdx = stringInitial - firstLetterInAlphabet;
 
     if (alphabeticIdx > 25 || alphabeticIdx < 0)
@@ -243,11 +236,19 @@ export default function Contacts() {
 
   const letterHeader = (alphabeticIdx) => {
     let letterJSX = null;
+    const styles = {
+      fontWeight: '700', 
+      borderBottom: 'solid black 2px', 
+      marginBottom: '10px', 
+      marginTop: '30px'
+    }
 
-    if(alphabeticIdx < 26)
-      letterJSX = <div style={{fontWeight: '700', borderBottom: 'solid black 2px', marginBottom: '10px', marginTop: '30px'}}>{String.fromCharCode(65 + alphabeticIdx)}</div>
-    else
-      letterJSX = <div>#</div>
+    if ((alphabeticIdx < nonAlphabeticCharIndex) && !searchString)
+      letterJSX = <div style={styles}>{String.fromCharCode(65 + alphabeticIdx)}</div>
+    else if ((alphabeticIdx === nonAlphabeticCharIndex) && !searchString)
+      letterJSX = <div style={styles}>#</div>
+    else 
+      letterJSX = <div style={styles}>Top Searches</div>
 
     if(searchedContacts[alphabeticIdx].length > 0)
       return (
@@ -261,6 +262,23 @@ export default function Contacts() {
           </div>
         </Grow>
       )
+  }
+
+  const pageFooter = () => {
+    const pageFooterJSX = (
+      <Typography key='pageFooter'> 
+        {numContacts > 0 ? `${numContacts} Contacts` : "No Contacts"} 
+      </Typography>
+    )
+    
+    if(!searchString)
+      return pageFooterJSX
+  }
+
+  const loopContacts = (column) => {
+    return column.map(contact => 
+      <InfoCard key={contact._id} {...contact} {...cardFunctions} />
+    )
   }
 
   const cardFunctions = { handleEditContact, handleDeleteContact };
@@ -315,37 +333,33 @@ export default function Contacts() {
         </Grid>
       </Grid>
 
-      {/* {!loading ? ( */}
-      <Grid container direction="row">
-        
+      <Grid container direction="row" justify="center">
         { 
           searchedContacts.map((column, idx) => {
-            if(!column)
+            if (!column && (idx < nonAlphabeticCharIndex))
               return column
 
-            return(
-              <div key={idx} style={{ width: "100%" }}>
-                {letterHeader(idx)}
-                
-                {column.map(contact => 
-                  <InfoCard key={contact._id} {...contact} {...cardFunctions} />
-                )}
-              </div>
-            )
+            if (!column && (idx === nonAlphabeticCharIndex))
+              return pageFooter()
+
+            if (column && (idx < nonAlphabeticCharIndex))
+              return(
+                <div key={idx} style={{ width: "100%" }}>
+                  {letterHeader(idx)}
+                  {loopContacts(column)}
+                </div>
+              )
+
+            if (column && (idx === nonAlphabeticCharIndex))
+              return(
+                <div key={idx} style={{ width: "100%" }}>
+                  {letterHeader(idx)}
+                  {loopContacts(column)}
+                  {pageFooter()}
+                </div>
+              )
           })}
       </Grid>
-        {/* ) : null} */}
-      {/* {!loading ? (
-      <Grid container style={{ paddingTop: "4%" }} justify="center">
-        
-          <Grid item>
-            <Typography>
-              {numContacts > 0 ? `${numContacts} Contacts` : "No Contacts"}
-            </Typography>
-          </Grid>
-      </Grid>
-      ) : null} */}
-      
     </Container>
   );
 }
