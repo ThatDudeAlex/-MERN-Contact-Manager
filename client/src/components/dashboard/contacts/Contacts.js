@@ -236,19 +236,17 @@ export default function Contacts() {
 
   const letterHeader = (alphabeticIdx) => {
     let letterJSX = null;
-    const styles = {
-      fontWeight: '700', 
-      borderBottom: 'solid black 2px', 
-      marginBottom: '10px', 
-      marginTop: '30px'
-    }
+    // const styles = {
+    //   fontWeight: '700', 
+    //   borderBottom: 'solid black 2px', 
+    //   marginBottom: '10px', 
+    //   marginTop: '30px'
+    // }
 
     if ((alphabeticIdx < nonAlphabeticCharIndex) && !searchString)
-      letterJSX = <div style={styles}>{String.fromCharCode(65 + alphabeticIdx)}</div>
+      letterJSX = <div className={classes.letterHeader}>{String.fromCharCode(65 + alphabeticIdx)}</div>
     else if ((alphabeticIdx === nonAlphabeticCharIndex) && !searchString)
-      letterJSX = <div style={styles}>#</div>
-    else 
-      letterJSX = <div style={styles}>Top Searches</div>
+      letterJSX = <div className={classes.letterHeader}>#</div>
 
     if(searchedContacts[alphabeticIdx].length > 0)
       return (
@@ -266,7 +264,7 @@ export default function Contacts() {
 
   const pageFooter = () => {
     const pageFooterJSX = (
-      <Typography key='pageFooter'> 
+      <Typography key='pageFooter' className={classes.pageFooter}> 
         {numContacts > 0 ? `${numContacts} Contacts` : "No Contacts"} 
       </Typography>
     )
@@ -283,7 +281,7 @@ export default function Contacts() {
 
   const cardFunctions = { handleEditContact, handleDeleteContact };
   return (
-    <Container maxWidth="xl" style={{ paddingTop: "3.5%" }}>
+    <Container maxWidth="xl" className={classes.mainContainer}>
       <ModalCard
         modalState={modalState}
         handleAddContact={handleAddContact}
@@ -333,7 +331,9 @@ export default function Contacts() {
         </Grid>
       </Grid>
 
-      <Grid container direction="row" justify="center">
+      <Grid container direction="row">
+        {searchString && <div className={`${classes.letterHeader} ${classes.maxWidth}`}>Top Searches</div>}
+
         { 
           searchedContacts.map((column, idx) => {
             if (!column && (idx < nonAlphabeticCharIndex))
@@ -344,16 +344,16 @@ export default function Contacts() {
 
             if (column && (idx < nonAlphabeticCharIndex))
               return(
-                <div key={idx} style={{ width: "100%" }}>
-                  {letterHeader(idx)}
+                <div key={idx} className={classes.maxWidth}>
+                  {!searchString && letterHeader(idx)}
                   {loopContacts(column)}
                 </div>
               )
 
             if (column && (idx === nonAlphabeticCharIndex))
               return(
-                <div key={idx} style={{ width: "100%" }}>
-                  {letterHeader(idx)}
+                <div key={idx} className={classes.maxWidth}>
+                  {!searchString && letterHeader(idx)}
                   {loopContacts(column)}
                   {pageFooter()}
                 </div>

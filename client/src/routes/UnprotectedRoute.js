@@ -7,6 +7,7 @@ import { Consumer } from "../components/context";
 // Routes that are available for users not logged in
 // If user is not logged in, display protected page else redirect to '/dashboard'
 export default function UnprotectedRoute({ component: Component, ...rest }) {
+
   return (
     // consumer allows us to see the app state from context
     <Consumer>

@@ -186,9 +186,8 @@ export default function Cards({handleDeleteContact, handleEditContact, ...props}
               >
                 <ListItem>
                   <ListItemAvatar>
-                    {/* {profileImg ? <Avatar src={profileImg} /> : <AccountCircle style={{fontSize: "50px" }} /> } */}
-                    <Avatar src={profileImg ? profileImg : null} style={{fontSize: "40px", backgroundColor: '#1976d2'}}>
-                      <AccountCircle style={{fontSize: "40px", color: 'white'}} />
+                    <Avatar src={profileImg ? profileImg : null} className={classes.infoCardAvatar}>
+                      <AccountCircle className={classes.infoCardAvatar} />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText primary={props.name} />

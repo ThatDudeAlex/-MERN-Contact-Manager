@@ -19,7 +19,9 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
 
-  // all good
+  maxWidth: {
+    width: '100%'
+  },
   
   // ----- Modal Styles -----
   modal: {
@@ -33,14 +35,22 @@ export const useStyles = makeStyles((theme) => ({
     outline:'0'
   },
 
-  // paper: {
-  //   backgroundColor: theme.palette.background.paper,
-  //   border: "1px solid #000",
-  //   boxShadow: theme.shadows[5],
-  //   padding: theme.spacing(2, 4, 3),
-  // },
+  letterHeader:{
+    fontWeight: '700', 
+    borderBottom: 'solid black 2px', 
+    marginBottom: '10px', 
+    marginTop: '30px'
+  },
 
-
+  pageFooter: {
+    width: '100%', 
+    display: 'flex', 
+    justifyContent: 'center',
+    fontSize: '22px',
+    paddingTop: '20px',
+    paddingBottom: '20px'
+  },
+  
 
   // ----- Card Styles -----
   infoCard: {
@@ -67,6 +77,16 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: "30px",
   },
 
+  infoCardAvatar: {
+    fontSize: "40px", 
+    backgroundColor: '#1976d2'
+  },
+
+  infoCardAvatarIcon: {
+    fontSize: "40px", 
+    color: 'white'
+  },
+
   cardAvatar: {
     height: "80px",
     width: "80px",
@@ -75,7 +95,7 @@ export const useStyles = makeStyles((theme) => ({
   },
 
   cardAvatarIcon: {
-    fontSize: "70px",
+    fontSize: "80px",
   },
 
   cardContent: {
@@ -96,6 +116,9 @@ export const useStyles = makeStyles((theme) => ({
     paddingTop: '0px'
   },
 
+  mainContainer: {
+    paddingTop: "3.5%"
+  },
 
   form: {
     width: "100%", // Fix IE 11 issue.

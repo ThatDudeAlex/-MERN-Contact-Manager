@@ -22,12 +22,6 @@ import { useStyles } from "./styles/";
 export default function Header({ context }) {
   const classes = useStyles();
   const history = useHistory();
-  let userName = "";
-
-  if(typeof context.isAuthenticated === 'object' )
-    userName = context.isAuthenticated.name;
-  else
-    userName = context.isAuthenticated;
 
   // logs user out and redirects them to '/'
   const logout = async () => {
@@ -52,7 +46,7 @@ export default function Header({ context }) {
             item
             className={`${classes.headerName} ${classes.headerItem}`}
           >
-            <Typography variant="button"> {userName} </Typography>
+            <Typography variant="button"> {context.isAuthenticated.name} </Typography>
           </Grid>
 
           {/* Logout Button */}
